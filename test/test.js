@@ -45,7 +45,7 @@ router.post('/', (request, response) => {
             fs.appendFileSync(test_log, data.toString())
         })
         bash.on('exit', (code) => {
-            console.log('Testing Complete' + model.model_name)
+            console.log('Testing Complete -> ' + model.model_name)
             try {
                 result = cp.execFileSync('grep', ['I tensorflow/examples/label_image/main.cc.*', '-o', test_log])
                 result = result.toString().split('\n')[0]
@@ -55,13 +55,14 @@ router.post('/', (request, response) => {
                 })
                 if (model_data.length == results.length) {
                     console.log('Reading')
-                    model_path = '../model/flipkart'
-                    bottleneck_path = model_path + '/flipkart_bottleneck/' + results[0].class
+                    model_path = '../model/' + results[0].model
+                    bottleneck_path = model_path + '/' + results[0].model + '_bottleneck/' + results[0].class
                     files = fs.readdirSync(bottleneck_path)
-                    test_data = fs.readFileSync(model_path + '/flipkart_fingerprint.txt', 'utf8')
+                    test_data = fs.readFileSync(model_path + '/' + results[0].model + '_fingerprint.txt', 'utf8')
                     test_arr = test_data.split(' ').map(Number)
                     totalFiles = files.length
                     similarity = []
+                    console.log(results, model_path, bottleneck_path)
                     for (i = 0; i < totalFiles; i++) {
                         file_data = fs.readFileSync(bottleneck_path + '/' + files[i], 'utf8')
                         file_arr = file_data.split(',').map(Number)

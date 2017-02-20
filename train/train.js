@@ -105,7 +105,7 @@ router.post('/', (request, response) => {
     bash.on('exit', (code) => {
         console.log('Training Complete')
         json_path = '../' + model_dir + '/model.json'
-        model_log_data = cp.execFileSync('grep', ['"Final test accuracy.*"', '-o', '../' + opt.train_log])
+        model_log_data = cp.execFileSync('tail', ['-2', '../' + opt.train_log]).toString()
         model_obj.train_result = model_log_data.substring(model_log_data.indexOf('=') + 2, model_log_data.indexOf('\n'))
         try {
             model_data = JSON.parse(fs.readFileSync(json_path, 'utf8'))

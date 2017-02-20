@@ -91,7 +91,8 @@ var aff = require('flipkart-affiliate'),
         async.eachSeries(data[1], (item, callback) => {
             model_path = image_path + '/' + item.model
             check_dir(model_path)
-            image = model_path + '/' + item.id + '-' + item.class + '-' + item.color
+            image_ext = item.url.substring(item.url.lastIndexOf('.'))
+            image = model_path + '/' + item.id + '-' + item.class + '-' + item.color + image_ext
             try {
                 cp.execFileSync('curl', ['--silent', '-o', image, '-L', item.url], {
                     encoding: 'utf8'
@@ -136,18 +137,5 @@ var aff = require('flipkart-affiliate'),
 models = filterData(data)
 fs.writeFileSync('./json/final.json', JSON.stringify(models))
 */
-
-dir = './img/flipkart'
-dirs = fs.readdirSync(dir)
-async.eachSeries(dirs, (d_path, callback) => {
-    files = fs.readdirSync(dir + '/' + d_path)
-    async.eachSeries(files, (file, callback) => {
-        prev = dir + '/' + d_path + '/' + file
-        new_l = prev.substring(0, prev.lastIndexOf('.')) + '.jpg'
-        fs.renameSync(prev, new_l)
-        callback()
-    })
-    callback()
-})
 //downloadData(models[7])
 
