@@ -7,6 +7,16 @@ sudo apt install -y python-numpy python-dev
 #GCC
 sudo apt install gcc
 
+#NODEJS
+sudo apt update
+sudo apt install build-essential libssl-dev
+curl -sL https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh -o install_nvm.sh
+bash install_nvm.sh
+source ~/.profile
+nvm ls-remote
+nvm install 7.5.0
+nvm use 7.5.0
+
 #BAZEL
 sudo add-apt-repository ppa:webupd8team/java
 sudo apt update
@@ -22,4 +32,5 @@ cd CouchAI
 git clone https://github.com/tensorflow/tensorflow.git
 cd tensorflow
 
-bazel build tensorflow/examples/image_retraining:retrain
+bazel build tensorflow/examples/image_retraining:retrain --verbose_failures --local_resources 2048,2.0,1.0 -j 1
+bazel build tensorflow/examples/label_image:label_image

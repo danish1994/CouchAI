@@ -83,24 +83,31 @@ var aff = require('flipkart-affiliate'),
                 fs.mkdirSync(dir_path)
         }
     },
-    downloadData = (data) => {
+    downloadData = (models) => {
         image_path = './img/flipkart'
         check_dir(image_path)
-        length = data[1].length
-        done = 0
-        async.eachSeries(data[1], (item, callback) => {
-            model_path = image_path + '/' + item.model
-            check_dir(model_path)
-            image_ext = item.url.substring(item.url.lastIndexOf('.'))
-            image = model_path + '/' + item.id + '-' + item.class + '-' + item.color + image_ext
-            try {
-                cp.execFileSync('curl', ['--silent', '-o', image, '-L', item.url], {
-                    encoding: 'utf8'
-                })
-            } catch (error) {}
-            done++
-            perc = (((done * 1.0) / length) * 100).toFixed(2)
-            console.log('[' + perc + '%](' + done + '/' + length + ') ' + item.id + '-' + item.class + '-' + item.color + image_ext)
+        async.eachSeries(models, (data, callback) => {
+            length = data[1].length
+            console.log('Downloading class -> ' + data[0] + ' files -> ' + length)
+            done = 0
+            async.eachSeries(data[1], (item, callback) => {
+                model_path = image_path + '/' + item.model
+                check_dir(model_path)
+                if (item.url && item.model) {
+                    image_ext = item.url.substring(item.url.lastIndexOf('.'))
+                    image = model_path + '/' + item.id + '-' + item.class + '-' + item.color + image_ext
+                    try {
+                        cp.execFileSync('curl', ['--silent', '-o', image, '-L', item.url], {
+                            encoding: 'utf8'
+                        })
+                    } catch (error) {}
+                }
+                done++
+                perc = (((done * 1.0) / length) * 100).toFixed(2)
+                console.log('[' + perc + '%](' + done + '/' + length + ') ' + item.id + '-' + item.class + '-' + item.color + image_ext)
+                callback()
+            })
+            console.log('Finished downloading class -> ' + data[0] + ' files -> ' + length)
             callback()
         })
     },
@@ -118,24 +125,18 @@ var aff = require('flipkart-affiliate'),
             model[1] = model_data
             callback()
         })
-        total = []
-        files = 0
         models = models.filter((model) => {
             return model[1].length >= 600
-        })
-        models.map((model) => {
-            size = model[1].length
-            total.push(size)
-            files+= size
         })
         return models
     }
 
 //getCategoryFeedFlipkart()
-
-/*data = require('./json/flipkart.json')
+/*
+data = require('./json/flipkart.json')
 models = filterData(data)
 fs.writeFileSync('./json/final.json', JSON.stringify(models))
 */
+models = require('./json/final.json')
+console.log(models.length)
 //downloadData(models[7])
-
