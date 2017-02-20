@@ -58,7 +58,7 @@ router.post('/', (request, response) => {
     try {
         fs.unlinkSync('../' + opt.train_log)
     } catch (error) {
-        if(error.code != 'ENOENT')
+        if (error.code != 'ENOENT')
             console.log(error)
     }
     model_classes = fs.readdirSync('../' + image_dir).map((dir) => {
@@ -105,21 +105,13 @@ router.post('/', (request, response) => {
     bash.on('exit', (code) => {
         console.log('Training Complete')
         json_path = '../' + model_dir + '/model.json'
-        model_log_data = cp.execFileSync('tail', ['-2', '../' + opt.train_log]).toString()
+        model_log_data = cp.execFileSync('grep', ['Final test accuracy.*', '-o', '../' + opt.train_log]).toString()
         model_obj.train_result = model_log_data.substring(model_log_data.indexOf('=') + 2, model_log_data.indexOf('\n'))
         try {
-            model_data = JSON.parse(fs.readFileSync(json_path, 'utf8'))
-            model_names = model_data.filter((val) => {
-                return model_obj.model_name == val.model_name
-            })
-            if (model_names.length == 0)
-                model_data.push(model_obj)
-            else
-                model_data[model_names[0][1]] = model_obj
-            fs.writeFileSync(json_path, JSON.stringify(model_data))
+            fs.writeFileSync(json_path, JSON.stringify(model_obj))
         } catch (error) {
             if (error != null && error.code == 'ENOENT')
-                fs.writeFileSync(json_path, JSON.stringify([model_obj]))
+                fs.writeFileSync(json_path, JSON.stringify(model_obj))
         }
     })
     bash.stdin.write(args.join(' ') + '\n')
