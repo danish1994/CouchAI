@@ -100,7 +100,7 @@ var aff = require('flipkart-affiliate'),
             } catch (error) {}
             done++
             perc = (((done * 1.0) / length) * 100).toFixed(2)
-            console.log('[' + perc + '%](' + done + '/' + length + ') ' + item.id + '-' + item.color)
+            console.log('[' + perc + '%](' + done + '/' + length + ') ' + item.id + '-' + item.class + '-' + item.color + image_ext)
             callback()
         })
     },
