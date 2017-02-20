@@ -1,0 +1,12 @@
+/data
+/img
+/json
+/model
+/node_modules
+/train/node_modules
+/test/node_modules
+/tensorflow-master
+arg-classify
+arg-train
+*.gz
+*.zip

@@ -1,0 +1,18 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.1.4",
+    "body-parser": "^1.16.1",
+    "compute-cosine-similarity": "^1.0.0",
+    "compute-euclidean-distance": "^1.0.0",
+    "express": "^4.14.1"
+  }
+}
