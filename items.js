@@ -93,6 +93,7 @@ var aff = require('flipkart-affiliate'),
             async.eachSeries(data[1], (item, callback) => {
                 model_path = image_path + '/' + item.model
                 check_dir(model_path)
+                image_ext = ''
                 if (item.url && item.model) {
                     image_ext = item.url.substring(item.url.lastIndexOf('.'))
                     image = model_path + '/' + item.id + '-' + item.class + '-' + item.color + image_ext
@@ -105,11 +106,11 @@ var aff = require('flipkart-affiliate'),
                                     encoding: 'utf8'
                                 })
                             } catch (error) {}
-                            done++
-                            perc = (((done * 1.0) / length) * 100).toFixed(2)
-                            console.log('[' + perc + '%](' + done + '/' + length + ') ' + item.id + '-' + item.class + '-' + item.color + image_ext)
                         }
                     }
+                    done++
+                    perc = (((done * 1.0) / length) * 100).toFixed(2)
+                    console.log('[' + perc + '%](' + done + '/' + length + ') ' + item.id + '-' + item.class + '-' + item.color + image_ext)
                 }
                 callback()
             })

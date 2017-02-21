@@ -4,6 +4,11 @@ sudo apt update
 sudo apt install -y build-essential
 sudo apt install -y python-numpy python-dev
 
+#PIP
+sudo apt install python-pip python-dev build-essential 
+sudo pip install --upgrade pip 
+sudo pip install --upgrade virtualenv 
+
 #GCC
 sudo apt install gcc
 
