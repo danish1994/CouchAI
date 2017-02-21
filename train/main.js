@@ -10,6 +10,6 @@ app.get('/', (request, response) => {
 })
 app.use('/train', require('./train'))
 
-app.listen(9097, 'localhost', () => {
-    console.log('Serving running')
+app.listen(9097, () => {
+    console.log('Server running on port 9097')
 })

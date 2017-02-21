@@ -97,14 +97,20 @@ var aff = require('flipkart-affiliate'),
                     image_ext = item.url.substring(item.url.lastIndexOf('.'))
                     image = model_path + '/' + item.id + '-' + item.class + '-' + item.color + image_ext
                     try {
-                        cp.execFileSync('curl', ['--silent', '-o', image, '-L', item.url], {
-                            encoding: 'utf8'
-                        })
-                    } catch (error) {}
+                        fs.statSync(image)
+                    } catch (error) {
+                        if (error != null && error.code == 'ENOENT') {
+                            try {
+                                cp.execFileSync('curl', ['--silent', '-o', image, '-L', item.url], {
+                                    encoding: 'utf8'
+                                })
+                            } catch (error) {}
+                            done++
+                            perc = (((done * 1.0) / length) * 100).toFixed(2)
+                            console.log('[' + perc + '%](' + done + '/' + length + ') ' + item.id + '-' + item.class + '-' + item.color + image_ext)
+                        }
+                    }
                 }
-                done++
-                perc = (((done * 1.0) / length) * 100).toFixed(2)
-                console.log('[' + perc + '%](' + done + '/' + length + ') ' + item.id + '-' + item.class + '-' + item.color + image_ext)
                 callback()
             })
             console.log('Finished downloading class -> ' + data[0] + ' files -> ' + length)
