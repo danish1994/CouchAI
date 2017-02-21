@@ -113,10 +113,14 @@ var aff = require('flipkart-affiliate'),
                         perc = (((done * 1.0) / length) * 100).toFixed(2)
                         console.log('[' + perc + '%](' + done + '/' + length + ') ' + item.id + '-' + item.class + '-' + item.color + image_ext)
                     }
+                    try {
+                        callback()
+                    } catch (error) {
+                        console.log(error)
+                    }
                 } catch (error) {
                     console.log(error)
                 }
-                callback()
             })
             console.log('Finished downloading class -> ' + data[0] + ' files -> ' + length)
             callback()
