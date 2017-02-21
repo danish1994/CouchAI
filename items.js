@@ -91,26 +91,30 @@ var aff = require('flipkart-affiliate'),
             console.log('Downloading class -> ' + data[0] + ' files -> ' + length)
             done = 0
             async.eachSeries(data[1], (item, callback) => {
-                model_path = image_path + '/' + item.model
-                check_dir(model_path)
-                image_ext = ''
-                if (item.url && item.model) {
-                    image_ext = item.url.substring(item.url.lastIndexOf('.'))
-                    image = model_path + '/' + item.id + '-' + item.class + '-' + item.color + image_ext
-                    try {
-                        fs.statSync(image)
-                    } catch (error) {
-                        if (error != null && error.code == 'ENOENT') {
-                            try {
-                                cp.execFileSync('curl', ['--silent', '-o', image, '-L', item.url], {
-                                    encoding: 'utf8'
-                                })
-                            } catch (error) {}
+                try {
+                    model_path = image_path + '/' + item.model
+                    check_dir(model_path)
+                    image_ext = ''
+                    if (item.url && item.model) {
+                        image_ext = item.url.substring(item.url.lastIndexOf('.'))
+                        image = model_path + '/' + item.id + '-' + item.class + '-' + item.color + image_ext
+                        try {
+                            fs.statSync(image)
+                        } catch (error) {
+                            if (error != null && error.code == 'ENOENT') {
+                                try {
+                                    cp.execFileSync('curl', ['--silent', '-o', image, '-L', item.url], {
+                                        encoding: 'utf8'
+                                    })
+                                } catch (error) {}
+                            }
                         }
+                        done++
+                        perc = (((done * 1.0) / length) * 100).toFixed(2)
+                        console.log('[' + perc + '%](' + done + '/' + length + ') ' + item.id + '-' + item.class + '-' + item.color + image_ext)
                     }
-                    done++
-                    perc = (((done * 1.0) / length) * 100).toFixed(2)
-                    console.log('[' + perc + '%](' + done + '/' + length + ') ' + item.id + '-' + item.class + '-' + item.color + image_ext)
+                } catch (error) {
+                    console.log(error)
                 }
                 callback()
             })
