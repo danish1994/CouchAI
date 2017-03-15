@@ -19,8 +19,11 @@ router.post('/fs', (request, response) => {
 
 router.post('/save', (request, response) => {
     body = request.body
-    console.log(body.data.substring(0, 10))
-    fs.writeFile('./final/' + body.name + '.jpg', body.data, 'base64', (error) => {
+    body.data = body.data.replace(/ /g, '+')
+    console.log(body.data)
+    fs.writeFile('./final/' + body.name + '.jpeg', body.data, {
+        encoding: 'base64'
+    }, (error) => {
         if(error)
             console.log(error)
         response.send({
