@@ -1,4 +1,5 @@
 sudo apt update
+find . -type f | wc -l
 
 #PYTHON
 sudo apt install -y build-essential
