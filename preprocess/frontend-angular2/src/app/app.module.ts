@@ -13,9 +13,10 @@ import { Service } from './app.service'
   template: `<div id="all">
               <img-cropper [image]="data" [settings]="cropperSettings" (onCrop)="cropped($event)"></img-cropper><br>
               <button (click)="crop()">Crop</button>
+              <label *ngIf="img_load == false">Image Loading</label>
               <img *ngIf="data.image" hidden id="cropped_img" [src]="data.image" [width]="cropperSettings.croppedWidth" [height]="cropperSettings.croppedHeight">
               <div id="load">
-                <input type="number" min="20" [(ngModel)]="batch_size"/>
+                <input type="number" min="20" step="20" [(ngModel)]="batch_size"/>
                 <button (click)="load_batch()">Load</button>
                 <button (click)="update_batch(-1)">Previous Batch</button>
                 <button (click)="update_batch(1)">Next Batch</button>
@@ -27,8 +28,9 @@ import { Service } from './app.service'
                 <button (click)="load(0)">Go</button>
               </div>
               <div id="data">
-                Name:<input type="text" id="img_name"/>
-                Other:<input type="text" id="other"/><br/>
+                Name:<input type="text" id="img_name" readonly/>
+                Other:<input type="text" id="other" readonly/>
+                Saved:<label *ngIf="data.image">{{saved}}</label><br/>
                 <button (click)="add_field()">Add Field</button>
                 <table>
                   <thead *ngIf="data_fields != 0">
@@ -46,7 +48,7 @@ import { Service } from './app.service'
                 </table>
                 <button *ngIf="data_fields != 0" (click)="save(0)">Save</button>
               </div>
-              <button (click)="save(1)">Crop & Save</button>
+              <button *ngIf="data_fields != 0" (click)="save(1)">Crop & Save</button>
             </div>`
 })
 
@@ -61,6 +63,8 @@ export class AppComponent  {
   cropperSettings: CropperSettings
   data_fields: number = 0
   arr: Array<any> = []
+  saved: string = 'Checking'
+  img_load: boolean = false
   @ViewChild(ImageCropperComponent) cropper: ImageCropperComponent
   constructor(private service: Service) {
     this.cropperSettings = new CropperSettings()
@@ -75,15 +79,20 @@ export class AppComponent  {
     this.service.getImageData(current_image.filename).then((img) => {
       let img_ele = (<HTMLInputElement>document.getElementById('img_name')),
           other_ele = (<HTMLInputElement>document.getElementById('other'))
+      this.service.check(current_image.name.toString()).then((res) => {
+        console.log(res)
+      })
       img_ele.value = current_image.name.toString()
       other_ele.value = current_image.metaname.toString()
       var image = new Image()
       image.src = 'data:image/jpeg;base64,' + img
       this.cropper.setImage(image)
+      this.img_load = true
     })
   }
   load_batch() {
     this.img = []
+    this.saved = 'Checking'
     let min = this.batch * this.batch_size,
         max = min + this.batch_size
     this.service.getImages(min, max).then((img) => {
@@ -109,6 +118,7 @@ export class AppComponent  {
     else
       this.counter += number
     console.log(this.counter)
+    this.img_load = false
     this.load_image()
   }
   add_field() {

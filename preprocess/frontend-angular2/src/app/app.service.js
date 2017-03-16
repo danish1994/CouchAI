@@ -50,6 +50,13 @@ var Service = (function () {
             .then(function (res) { return res.json(); })
             .catch(this.handleError);
     };
+    Service.prototype.check = function (name) {
+        return this.http.get('http://localhost:8089/data/' + name, {
+            headers: this.headers
+        }).toPromise()
+            .then(function (res) { return res.json().data; })
+            .catch(this.handleError);
+    };
     Service.prototype.handleError = function (error) {
         console.error('An error occurred', error);
         return Promise.reject(error.message || error);
