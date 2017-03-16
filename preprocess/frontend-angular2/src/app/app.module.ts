@@ -13,7 +13,7 @@ import { Service } from './app.service'
   template: `<div id="all">
               <img-cropper [image]="data" [settings]="cropperSettings" (onCrop)="cropped($event)"></img-cropper><br>
               <button (click)="crop()">Crop</button>
-              <img *ngIf="data.image" id="cropped_img" [src]="data.image" [width]="cropperSettings.croppedWidth" [height]="cropperSettings.croppedHeight">
+              <img *ngIf="data.image" hidden id="cropped_img" [src]="data.image" [width]="cropperSettings.croppedWidth" [height]="cropperSettings.croppedHeight">
               <div id="access">
                 <button (click)="load(1)">Next</button>
                 <button (click)="load(-1)">Previous</button>
@@ -21,7 +21,8 @@ import { Service } from './app.service'
                 <button (click)="load(0)">Go</button>
               </div>
               <div id="data">
-                Name:<input type="text" id="img_name"/><br/>
+                Name:<input type="text" id="img_name"/>
+                Other:<input type="text" id="other"/><br/>
                 <button (click)="add_field()">Add Field</button>
                 <table>
                   <thead *ngIf="data_fields != 0">
@@ -43,7 +44,7 @@ import { Service } from './app.service'
 })
 
 export class AppComponent  { 
-  img: ClothImage[]
+  img: ClothImage[] = []
   img_data: Object = {}
   data: Object
   value: number
@@ -60,15 +61,19 @@ export class AppComponent  {
     this.cropperSettings.fileType = 'jpeg'
     this.data = {}
     this.service.getImages().then((img) => {
-      this.img = img
+      let len = img.length
+      for(let i=0;i<len;i++)
+        this.img.push(new ClothImage(img[i]))
       this.load_image()
     })
   }
   load_image() {
-    this.service.getImageData(this.img[this.counter].toString()).then((img) => {
-      let img_name = this.img[this.counter].toString(),
-          img_ele = (<HTMLInputElement>document.getElementById('img_name'))
-      img_ele.value = img_name.substring(0, img_name.indexOf('-'))
+    let current_image = this.img[this.counter]
+    this.service.getImageData(current_image.filename).then((img) => {
+      let img_ele = (<HTMLInputElement>document.getElementById('img_name')),
+          other_ele = (<HTMLInputElement>document.getElementById('other'))
+      img_ele.value = current_image.name.toString()
+      other_ele.value = current_image.metaname.toString()
       var image = new Image()
       image.src = 'data:image/jpeg;base64,' + img
       this.cropper.setImage(image)
@@ -98,7 +103,6 @@ export class AppComponent  {
   cropped(bounds:Bounds) {
     this.cropperSettings.croppedHeight =bounds.bottom-bounds.top;
     this.cropperSettings.croppedWidth = bounds.right-bounds.left;
-    console.log(this.cropperSettings.croppedHeight, this.cropperSettings.croppedWidth)
   }
   crop() {
     let image_data = (<HTMLImageElement>document.getElementById('cropped_img')).src,

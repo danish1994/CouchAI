@@ -12,11 +12,11 @@ export class Service {
         'Access-Control-Allow-Origin': '*'
     })
     constructor(private http: Http) { }
-    getImages(): Promise<ClothImage[]>  {
+    getImages(): Promise<String[]>  {
         return this.http.get('http://localhost:8089/img/fs/0/100', {
             headers: this.headers
         }).toPromise()
-          .then(res => res.json().files as ClothImage[])
+          .then(res => res.json().files as String[])
           .catch(this.handleError)               
     }
     getImageData(filename: String): Promise<String> {

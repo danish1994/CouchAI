@@ -13,7 +13,8 @@ app.use('/', bodyparser.urlencoded({
     limit: '50mb'
 }))
 
-app.use('/img', require('./img.js'))
+app.use('/img', require('./img'))
+app.use('/data', require('./data'))
 app.use('/dresses', express.static(path.join(__dirname, './dresses')))
 
 app.use(function(req, res, next) {
