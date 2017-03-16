@@ -7,12 +7,6 @@ var ClothImage = (function () {
         this.extension = tmp.slice(1).join('.');
         this.filename = this.name + '-' + this.metaname + '.' + this.extension;
     }
-    ClothImage.prototype.set_data = function (data) {
-        this.data = data;
-    };
-    ClothImage.prototype.get_data = function () {
-        return this.data;
-    };
     return ClothImage;
 }());
 exports.ClothImage = ClothImage;

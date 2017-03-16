@@ -14,9 +14,15 @@ import { Service } from './app.service'
               <img-cropper [image]="data" [settings]="cropperSettings" (onCrop)="cropped($event)"></img-cropper><br>
               <button (click)="crop()">Crop</button>
               <img *ngIf="data.image" hidden id="cropped_img" [src]="data.image" [width]="cropperSettings.croppedWidth" [height]="cropperSettings.croppedHeight">
+              <div id="load">
+                <input type="number" min="20" [(ngModel)]="batch_size"/>
+                <button (click)="load_batch()">Load</button>
+                <button (click)="update_batch(-1)">Previous Batch</button>
+                <button (click)="update_batch(1)">Next Batch</button>
+              </div>
               <div id="access">
-                <button (click)="load(1)">Next</button>
                 <button (click)="load(-1)">Previous</button>
+                <button (click)="load(1)">Next</button>
                 <input type="number" [(ngModel)]="counter" min="0"/>
                 <button (click)="load(0)">Go</button>
               </div>
@@ -32,14 +38,15 @@ import { Service } from './app.service'
                   </thead>
                   <tbody id="fields">
                     <tr *ngFor="let i of arr" id="data_{{i}}">
-                      <td id="key_{{i}}"><input type="text"/></td>
-                      <td id="value_{{i}}"><input type="text"/></td>
+                      <td><input id="key_{{i}}" type="text"/></td>
+                      <td><input id="value_{{i}}" type="text"/></td>
                       <td><button (click)="del_field()">X</button></td>
                     </tr>
                   </tbody>
                 </table>
-                <button *ngIf="data_fields != 0" (click)="save">Save</button>
+                <button *ngIf="data_fields != 0" (click)="save(0)">Save</button>
               </div>
+              <button (click)="save(1)">Crop & Save</button>
             </div>`
 })
 
@@ -49,6 +56,8 @@ export class AppComponent  {
   data: Object
   value: number
   counter: number = 0
+  batch: number = 0
+  batch_size: number = 0
   cropperSettings: CropperSettings
   data_fields: number = 0
   arr: Array<any> = []
@@ -60,12 +69,6 @@ export class AppComponent  {
     this.cropperSettings.preserveSize = true
     this.cropperSettings.fileType = 'jpeg'
     this.data = {}
-    this.service.getImages().then((img) => {
-      let len = img.length
-      for(let i=0;i<len;i++)
-        this.img.push(new ClothImage(img[i]))
-      this.load_image()
-    })
   }
   load_image() {
     let current_image = this.img[this.counter]
@@ -78,6 +81,24 @@ export class AppComponent  {
       image.src = 'data:image/jpeg;base64,' + img
       this.cropper.setImage(image)
     })
+  }
+  load_batch() {
+    this.img = []
+    let min = this.batch * this.batch_size,
+        max = min + this.batch_size
+    this.service.getImages(min, max).then((img) => {
+      let len = img.length
+      for(let i=0;i<len;i++)
+        this.img.push(new ClothImage(img[i]))
+      this.load_image()
+    })
+  }
+  update_batch(number: number) {
+    if(number)
+      this.batch++
+    else if(this.batch != 0)
+      this.batch--
+    this.load_batch()
   }
   load(number: number) {
     let temp = this.counter + number
@@ -112,6 +133,19 @@ export class AppComponent  {
     this.service.saveImage(image_name, image_data).then((obj) => {
       console.log(obj)
     })
+  }
+  save(number: number) {
+    console.log('Saving data')
+    if(number)
+      this.crop()
+    let current_image = this.img[this.counter]
+    current_image.data = {}
+    for(let i = 1;i<=this.data_fields;i++) {
+      let key = (<HTMLInputElement>document.getElementById('key_' + i)).value,
+          val = (<HTMLInputElement>document.getElementById('value_' + i)).value
+      current_image.data[key] = val
+    }
+    this.service.saveData(current_image).then((res) => console.log(res))
   }
 }
 

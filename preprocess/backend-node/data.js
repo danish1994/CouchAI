@@ -18,6 +18,14 @@ db.once('open', () => {
             data: 'OK'
         })
     })
+
+    router.post('/', (request, response) => {
+        body = request.body
+        response.send({
+            name: body.name,
+            data: JSON.parse(body.data)
+        })
+    })
 })
 
 module.exports = router

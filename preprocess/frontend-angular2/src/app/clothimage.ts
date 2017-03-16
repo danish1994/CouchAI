@@ -3,7 +3,7 @@ export class ClothImage {
     metaname: String
     extension: String
     filename: String
-    data: JSON
+    data: Object
     constructor(name: String) {
         let temp = name.split('-'),
             tmp = temp.slice(1).join('-').split('.')
@@ -11,11 +11,5 @@ export class ClothImage {
         this.metaname = tmp[0]
         this.extension = tmp.slice(1).join('.')
         this.filename = this.name + '-' + this.metaname + '.' + this.extension
-    }
-    set_data(data:JSON) {
-        this.data = data
-    }
-    get_data() {
-        return this.data
     }
 }

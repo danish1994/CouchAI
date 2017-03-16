@@ -19,8 +19,8 @@ var Service = (function () {
             'Access-Control-Allow-Origin': '*'
         });
     }
-    Service.prototype.getImages = function () {
-        return this.http.get('http://localhost:8089/img/fs/0/100', {
+    Service.prototype.getImages = function (min, max) {
+        return this.http.get('http://localhost:8089/img/fs/' + min + '/' + max, {
             headers: this.headers
         }).toPromise()
             .then(function (res) { return res.json().files; })
@@ -39,7 +39,15 @@ var Service = (function () {
         return this.http.post('http://localhost:8089/img/save', body, {
             headers: this.headers
         }).toPromise()
-            .then(function (res) { return res.json().data; })
+            .then(function (res) { return res.json(); })
+            .catch(this.handleError);
+    };
+    Service.prototype.saveData = function (cloth) {
+        var body = 'name=' + cloth.name + '&data=' + JSON.stringify(cloth.data);
+        return this.http.post('http://localhost:8089/data', body, {
+            headers: this.headers
+        }).toPromise()
+            .then(function (res) { return res.json(); })
             .catch(this.handleError);
     };
     Service.prototype.handleError = function (error) {
