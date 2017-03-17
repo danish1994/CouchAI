@@ -54,7 +54,7 @@ var Service = (function () {
         return this.http.get('http://localhost:8089/data/' + name, {
             headers: this.headers
         }).toPromise()
-            .then(function (res) { return res.json().data; })
+            .then(function (res) { return JSON.stringify(res.json().data); })
             .catch(this.handleError);
     };
     Service.prototype.handleError = function (error) {

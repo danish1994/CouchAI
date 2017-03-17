@@ -19,7 +19,7 @@ router.post('/fs', (request, response) => {
 router.post('/save', (request, response) => {
     body = request.body
     body.data = body.data.replace(/ /g, '+')
-    fs.writeFile('./final/' + body.name + '.jpeg', body.data, {
+    fs.writeFile('./final/' + body.name + '.jpg', body.data, {
         encoding: 'base64'
     }, (error) => {
         if(error)

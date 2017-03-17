@@ -1,4 +1,5 @@
 const mongoose = require('mongoose'),
+    fs = require('fs'),
     router = require('express').Router()
 
 mongoose.connect('mongodb://localhost:27017/test')
@@ -8,23 +9,31 @@ db.on('error', console.error.bind(console, 'connection error'))
 db.once('open', () => {
     console.log('Connected')
     var clothSchema = mongoose.Schema({
-        name: 'String',
-        extension: 'String',
-        data: 'Object'
-    }, {
-        collection: 'cloth'
-    }),
+            name: 'String',
+            extension: 'String',
+            data: 'Object'
+        }, {
+            collection: 'cloth'
+        }),
         cloth = mongoose.model('cloth', clothSchema)
     router.get('/:name', (request, response) => {
-        cloth.find({
+        cloth.findOne({
             name: request.params.name
         }).exec((error, res) => {
-            console.log(res)
-            if(res.length)
+            if (res) {
+                try {
+                img = fs.readFileSync('./final/' + res.name + '.jpg').toString('base64')
+                } catch(error) {
+                    img = null
+                }
                 response.send({
-                    data: res
+                    data: {
+                        name: res.name,
+                        data: res.data,
+                        imgData: img
+                    }
                 })
-            else
+            } else
                 response.send({
                     data: null
                 })
@@ -33,17 +42,29 @@ db.once('open', () => {
 
     router.post('/', (request, response) => {
         body = request.body
-        obj = new cloth({
-            name: body.name,
-            data: JSON.parse(body.data)
-        }).save((error, res, num) => {
-            if(error)
+        cloth.findOne({
+            name: body.name
+        }).exec((error, res) => {
+            console.log(res)
+            if (res) {
+                res.data = JSON.parse(body.data)
+                res.save()
                 response.send({
-                    data: 'Error'
+                    data: 'Updated'
                 })
-            else
-                response.send({
-                    data: res + ',' + num
+            } else
+                obj = new cloth({
+                    name: body.name,
+                    data: JSON.parse(body.data)
+                }).save((error, res, num) => {
+                    if (error)
+                        response.send({
+                            data: 'Error'
+                        })
+                    else
+                        response.send({
+                            data: res + ', ' + num
+                        })
                 })
         })
     })

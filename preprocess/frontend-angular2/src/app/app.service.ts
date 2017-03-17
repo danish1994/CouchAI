@@ -43,11 +43,11 @@ export class Service {
           .then(res => res.json() as Object)
           .catch(this.handleError)
     }
-    check(name: string): Promise<Object> {
+    check(name: string): Promise<String> {
         return this.http.get('http://localhost:8089/data/' + name, {
             headers: this.headers
         }).toPromise()
-          .then(res => res.json().data as Object)
+          .then(res => JSON.stringify(res.json().data) as String)
           .catch(this.handleError)
     }
     private handleError(error: any): Promise<any> {

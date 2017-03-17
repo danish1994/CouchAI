@@ -25,7 +25,7 @@ var AppComponent = (function () {
         this.batch_size = 0;
         this.data_fields = 0;
         this.arr = [];
-        this.saved = 'Checking';
+        this.saved = 'Checking...';
         this.img_load = false;
         this.cropperSettings = new ng2_img_cropper_1.CropperSettings();
         this.cropperSettings.keepAspect = false;
@@ -34,31 +34,65 @@ var AppComponent = (function () {
         this.cropperSettings.fileType = 'jpeg';
         this.data = {};
     }
+    AppComponent.prototype.ngDoCheck = function () {
+        var data = this.img[this.counter];
+        try {
+            if (data.data != undefined && Object.keys(data.data).length != 0) {
+                for (var i = 1; i <= this.data_fields; i++) {
+                    var key_ele = document.getElementById('key_' + i), val_ele = document.getElementById('value_' + i);
+                    key_ele.value = this.current_keys[i - 1].toString();
+                    val_ele.value = data.data[this.current_keys[i - 1].toString()];
+                }
+                this.saved = 'Loaded';
+            }
+        }
+        catch (error) { }
+    };
     AppComponent.prototype.load_image = function () {
         var _this = this;
         var current_image = this.img[this.counter];
+        if (this.data_fields > 0) {
+            for (var i = 1; i <= this.data_fields; i++)
+                document.getElementById('value_' + i).value = '';
+        }
         this.service.getImageData(current_image.filename).then(function (img) {
             var img_ele = document.getElementById('img_name'), other_ele = document.getElementById('other');
-            _this.service.check(current_image.name.toString()).then(function (res) {
-                console.log(res);
-            });
             img_ele.value = current_image.name.toString();
-            other_ele.value = current_image.metaname.toString();
             var image = new Image();
-            image.src = 'data:image/jpeg;base64,' + img;
-            _this.cropper.setImage(image);
-            _this.img_load = true;
+            image.src = 'data:image/jpeg;base64,';
+            _this.service.check(current_image.name.toString()).then(function (res) {
+                var data = JSON.parse(res.toString());
+                if (data) {
+                    _this.saved = 'Loading Data...';
+                    _this.current_keys = Object.keys(data.data);
+                    _this.data_fields = _this.current_keys.length;
+                    current_image.data = data.data;
+                    other_ele.value = '';
+                    _this.arr = Array(_this.data_fields).fill(1).map(function (x, i) { return i + 1; });
+                    if (data.imgData != null)
+                        image.src += data.imgData;
+                    else
+                        image.src += img;
+                }
+                else {
+                    _this.saved = 'No Data';
+                    other_ele.value = current_image.metaname.toString();
+                    image.src += img;
+                }
+                _this.cropper.setImage(image);
+                _this.img_load = true;
+            });
         });
     };
     AppComponent.prototype.load_batch = function () {
         var _this = this;
         this.img = [];
-        this.saved = 'Checking';
+        this.saved = 'Checking...';
         var min = this.batch * this.batch_size, max = min + this.batch_size;
         this.service.getImages(min, max).then(function (img) {
             var len = img.length;
             for (var i = 0; i < len; i++)
-                _this.img.push(new clothimage_1.ClothImage(img[i]));
+                _this.img.push(new clothimage_1.ClothImage(img[i], {}));
             _this.load_image();
         });
     };
@@ -122,7 +156,7 @@ var AppComponent = (function () {
     AppComponent = __decorate([
         core_1.Component({
             selector: 'my-app',
-            template: "<div id=\"all\">\n              <img-cropper [image]=\"data\" [settings]=\"cropperSettings\" (onCrop)=\"cropped($event)\"></img-cropper><br>\n              <button (click)=\"crop()\">Crop</button>\n              <label *ngIf=\"img_load == false\">Image Loading</label>\n              <img *ngIf=\"data.image\" hidden id=\"cropped_img\" [src]=\"data.image\" [width]=\"cropperSettings.croppedWidth\" [height]=\"cropperSettings.croppedHeight\">\n              <div id=\"load\">\n                <input type=\"number\" min=\"20\" step=\"20\" [(ngModel)]=\"batch_size\"/>\n                <button (click)=\"load_batch()\">Load</button>\n                <button (click)=\"update_batch(-1)\">Previous Batch</button>\n                <button (click)=\"update_batch(1)\">Next Batch</button>\n              </div>\n              <div id=\"access\">\n                <button (click)=\"load(-1)\">Previous</button>\n                <button (click)=\"load(1)\">Next</button>\n                <input type=\"number\" [(ngModel)]=\"counter\" min=\"0\"/>\n                <button (click)=\"load(0)\">Go</button>\n              </div>\n              <div id=\"data\">\n                Name:<input type=\"text\" id=\"img_name\" readonly/>\n                Other:<input type=\"text\" id=\"other\" readonly/>\n                Saved:<label *ngIf=\"data.image\">{{saved}}</label><br/>\n                <button (click)=\"add_field()\">Add Field</button>\n                <table>\n                  <thead *ngIf=\"data_fields != 0\">\n                    <th>Key</th>\n                    <th>Value</th>\n                    <th></th>\n                  </thead>\n                  <tbody id=\"fields\">\n                    <tr *ngFor=\"let i of arr\" id=\"data_{{i}}\">\n                      <td><input id=\"key_{{i}}\" type=\"text\"/></td>\n                      <td><input id=\"value_{{i}}\" type=\"text\"/></td>\n                      <td><button (click)=\"del_field()\">X</button></td>\n                    </tr>\n                  </tbody>\n                </table>\n                <button *ngIf=\"data_fields != 0\" (click)=\"save(0)\">Save</button>\n              </div>\n              <button *ngIf=\"data_fields != 0\" (click)=\"save(1)\">Crop & Save</button>\n            </div>"
+            template: "<div id=\"all\">\n              <img-cropper [image]=\"data\" [settings]=\"cropperSettings\" (onCrop)=\"cropped($event)\"></img-cropper><br>\n              <button (click)=\"crop()\">Crop</button>\n              <label *ngIf=\"img_load == false\">Image Loading</label>\n              <img *ngIf=\"data.image\" hidden id=\"cropped_img\" [src]=\"data.image\" [width]=\"cropperSettings.croppedWidth\" [height]=\"cropperSettings.croppedHeight\">\n              <div id=\"load\">\n                <input type=\"number\" min=\"20\" step=\"20\" [(ngModel)]=\"batch_size\"/>\n                <button (click)=\"load_batch()\">Load</button>\n                <button (click)=\"update_batch(-1)\">Previous Batch</button>\n                <button (click)=\"update_batch(1)\">Next Batch</button>\n              </div>\n              <div id=\"access\">\n                <button (click)=\"load(-1)\">Previous</button>\n                <button (click)=\"load(1)\">Next</button>\n                <input type=\"number\" [(ngModel)]=\"counter\" min=\"0\"/>\n                <button (click)=\"load(0)\">Go</button>\n              </div>\n              <div id=\"data\">\n                Name:<input type=\"text\" id=\"img_name\" readonly/>\n                Other:<input type=\"text\" id=\"other\" readonly/>\n                Data:<label *ngIf=\"data.image\">{{saved}}</label><br/>\n                <button (click)=\"add_field()\">Add Field</button>\n                <table>\n                  <thead *ngIf=\"data_fields != 0\">\n                    <th>Key</th>\n                    <th>Value</th>\n                    <th></th>\n                  </thead>\n                  <tbody id=\"fields\">\n                    <tr *ngFor=\"let i of arr\" id=\"data_{{i}}\">\n                      <td><input id=\"key_{{i}}\" type=\"text\"/></td>\n                      <td><input id=\"value_{{i}}\" type=\"text\"/></td>\n                      <td><button (click)=\"del_field()\">X</button></td>\n                    </tr>\n                  </tbody>\n                </table>\n                <button *ngIf=\"data_fields != 0\" (click)=\"save(0)\">Save</button>\n              </div>\n              <button *ngIf=\"data_fields != 0\" (click)=\"save(1)\">Crop & Save</button>\n            </div>"
         }), 
         __metadata('design:paramtypes', [app_service_1.Service])
     ], AppComponent);

@@ -16,6 +16,7 @@ app.use('/', bodyparser.urlencoded({
 app.use('/img', require('./img'))
 app.use('/data', require('./data'))
 app.use('/dresses', express.static(path.join(__dirname, './dresses')))
+app.use('/final', express.static(path.join(__dirname, './final')))
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*")
