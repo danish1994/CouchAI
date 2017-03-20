@@ -19,15 +19,22 @@ var Service = (function () {
             'Access-Control-Allow-Origin': '*'
         });
     }
-    Service.prototype.getImages = function (min, max) {
-        return this.http.get('http://localhost:8089/img/fs/' + min + '/' + max, {
+    Service.prototype.getDirs = function () {
+        return this.http.get('http://localhost:8089/img/fs/dir', {
+            headers: this.headers
+        }).toPromise()
+            .then(function (res) { return res.json().data; })
+            .catch(this.handleError);
+    };
+    Service.prototype.getImages = function (dir, min, max) {
+        return this.http.get('http://localhost:8089/img/fs/' + dir + '/' + min + '/' + max, {
             headers: this.headers
         }).toPromise()
             .then(function (res) { return res.json().files; })
             .catch(this.handleError);
     };
-    Service.prototype.getImageData = function (filename) {
-        var body = 'filename=' + filename;
+    Service.prototype.getImageData = function (dirname, filename) {
+        var body = 'dirname=' + dirname + '&filename=' + filename;
         return this.http.post('http://localhost:8089/img/fs', body, {
             headers: this.headers
         }).toPromise()

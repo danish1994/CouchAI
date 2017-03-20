@@ -1,75 +1,61 @@
-import {
-  NgModule,
-  ViewChild,
-  Component,
-  DoCheck
-} from '@angular/core'
-import {
-  BrowserModule
-} from '@angular/platform-browser'
-import {
-  HttpModule
-} from '@angular/http'
-import {
-  FormsModule
-} from '@angular/forms'
-import {
-  ImageCropperComponent,
-  CropperSettings,
-  Bounds
-} from 'ng2-img-cropper'
-import {
-  Subscription
-} from 'rxjs/Subscription'
+import { NgModule, ViewChild, Component, DoCheck } from '@angular/core'
+import { BrowserModule } from '@angular/platform-browser'
+import { HttpModule } from '@angular/http'
+import { FormsModule } from '@angular/forms'
+import { ImageCropperComponent, CropperSettings, Bounds } from 'ng2-img-cropper'
 
-import {
-  ClothImage
-} from './clothimage'
-import {
-  Service
-} from './app.service'
+import { ClothImage } from './clothimage'
+import { Service } from './app.service'
 
 @Component({
   selector: 'my-app',
   template: `<div id="all">
-              <img-cropper [image]="data" [settings]="cropperSettings" (onCrop)="cropped($event)"></img-cropper><br>
-              <button (click)="crop()">Crop</button>
-              <label *ngIf="img_load == false">Image Loading</label>
-              <img *ngIf="data.image" hidden id="cropped_img" [src]="data.image" [width]="cropperSettings.croppedWidth" [height]="cropperSettings.croppedHeight">
-              <div id="load">
-                <input type="number" min="20" step="20" [(ngModel)]="batch_size"/>
-                <button (click)="load_batch()">Load</button>
-                <button (click)="update_batch(-1)">Previous Batch</button>
-                <button (click)="update_batch(1)">Next Batch</button>
+              <select id="dir" *ngIf="dirs" [(ngModel)]="dir">
+                <option *ngFor="let dirname of dirs" value="{{dirname}}">
+                  {{dirname}}
+                </option>
+              </select>
+              <div *ngIf="dir" id="cloth">
+                <img-cropper [image]="data" [settings]="cropperSettings" (onCrop)="cropped($event)"></img-cropper><br>
+                <button (click)="crop()">Crop</button>
+                <label *ngIf="img_load == false">Image Loading</label>
+                <img *ngIf="data.image" hidden id="cropped_img" [src]="data.image" [width]="cropperSettings.croppedWidth" [height]="cropperSettings.croppedHeight">
+                <div id="load">
+                  <input type="number" min="20" step="20" [(ngModel)]="batch_size"/>
+                  <button (click)="load_batch()">Load</button>
+                  <button (click)="update_batch(-1)">Previous Batch</button>
+                  <button (click)="update_batch(1)">Next Batch</button>
+                </div>
+                <div id="access">
+                  <button (click)="load(-1)">Previous</button>
+                  <button (click)="load(1)">Next</button>
+                  <input type="number" [(ngModel)]="counter" min="0"/>
+                  <button (click)="load(0)">Go</button>
+                </div>
+                <div id="data">
+                  Name:<input type="text" id="img_name" readonly/>
+                  Other:<input type="text" id="other" readonly/>
+                  Data:<label *ngIf="data.image">{{saved}}</label><br/>
+                  Url: <a href="{{url}}">Link</a>
+                  <button (click)="add_field()">Add Field</button>
+                  <table>
+                    <thead *ngIf="data_fields != 0">
+                      <th>Key</th>
+                      <th>Value</th>
+                      <th></th>
+                    </thead>
+                    <tbody id="fields">
+                      <tr *ngFor="let i of arr" id="data_{{i}}">
+                        <td><input id="key_{{i}}" type="text"/></td>
+                        <td><input id="value_{{i}}" type="text"/></td>
+                        <td><button (click)="del_field()">X</button></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <button *ngIf="data_fields != 0" (click)="save(0)">Save</button>
+                </div>
+                <button *ngIf="data_fields != 0" (click)="save(1)">Crop & Save</button>
               </div>
-              <div id="access">
-                <button (click)="load(-1)">Previous</button>
-                <button (click)="load(1)">Next</button>
-                <input type="number" [(ngModel)]="counter" min="0"/>
-                <button (click)="load(0)">Go</button>
-              </div>
-              <div id="data">
-                Name:<input type="text" id="img_name" readonly/>
-                Other:<input type="text" id="other" readonly/>
-                Data:<label *ngIf="data.image">{{saved}}</label><br/>
-                <button (click)="add_field()">Add Field</button>
-                <table>
-                  <thead *ngIf="data_fields != 0">
-                    <th>Key</th>
-                    <th>Value</th>
-                    <th></th>
-                  </thead>
-                  <tbody id="fields">
-                    <tr *ngFor="let i of arr" id="data_{{i}}">
-                      <td><input id="key_{{i}}" type="text"/></td>
-                      <td><input id="value_{{i}}" type="text"/></td>
-                      <td><button (click)="del_field()">X</button></td>
-                    </tr>
-                  </tbody>
-                </table>
-                <button *ngIf="data_fields != 0" (click)="save(0)">Save</button>
-              </div>
-              <button *ngIf="data_fields != 0" (click)="save(1)">Crop & Save</button>
             </div>`
 })
 
@@ -77,16 +63,19 @@ export class AppComponent implements DoCheck {
   img: ClothImage[] = []
   img_data: Object = {}
   data: Object
+  dir: String
+  dirs: Array<String>
   value: number
   counter: number = 0
   batch: number = 0
   batch_size: number = 0
   cropperSettings: CropperSettings
   data_fields: number = 0
-  arr: Array < any > = []
+  arr: Array<any> = []
   saved: string = 'Checking...'
-  current_keys: Array < String >
-    img_load: boolean = false
+  current_keys: Array<String>
+  img_load: boolean = false
+  url: String
   @ViewChild(ImageCropperComponent) cropper: ImageCropperComponent
   constructor(private service: Service) {
     this.cropperSettings = new CropperSettings()
@@ -95,6 +84,10 @@ export class AppComponent implements DoCheck {
     this.cropperSettings.preserveSize = true
     this.cropperSettings.fileType = 'jpeg'
     this.data = {}
+    this.service.getDirs().then((dirs) => {
+      this.dirs = dirs
+      console.log(this.dirs)
+    })
   }
   ngDoCheck() {
     let data = this.img[this.counter]
@@ -109,19 +102,22 @@ export class AppComponent implements DoCheck {
         this.saved = 'Loaded'
       }
     } catch (error) {}
-  }
+  } 
   load_image() {
     let current_image = this.img[this.counter]
     if(this.data_fields > 0) {
       for(let i=1;i<=this.data_fields;i++)
         (<HTMLInputElement>document.getElementById('value_' + i)).value = ''
     }
-    this.service.getImageData(current_image.filename).then((img) => {
+    this.service.getImageData(this.dir, current_image.filename).then((img) => {
       let img_ele = ( < HTMLInputElement > document.getElementById('img_name')),
         other_ele = ( < HTMLInputElement > document.getElementById('other'))
       img_ele.value = current_image.name.toString()
       var image = new Image()
       image.src = 'data:image/jpeg;base64,'
+      let temp = img.split('$')
+      img = temp[0]
+      this.url = temp[1]
       this.service.check(current_image.name.toString()).then((res) => {
         let data = JSON.parse(res.toString())
         if (data) {
@@ -150,7 +146,7 @@ export class AppComponent implements DoCheck {
     this.saved = 'Checking...'
     let min = this.batch * this.batch_size,
       max = min + this.batch_size
-    this.service.getImages(min, max).then((img) => {
+    this.service.getImages(this.dir, min, max).then((img) => {
       let len = img.length
       for (let i = 0; i < len; i++)
         this.img.push(new ClothImage(img[i], {}))

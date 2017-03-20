@@ -12,15 +12,22 @@ export class Service {
         'Access-Control-Allow-Origin': '*'
     })
     constructor(private http: Http) { }
-    getImages(min: number, max: number): Promise<String[]>  {
-        return this.http.get('http://localhost:8089/img/fs/' + min + '/' + max, {
+    getDirs(): Promise<Array<String>> {
+        return this.http.get('http://localhost:8089/img/fs/dir', {
+            headers: this.headers
+        }).toPromise()
+          .then(res => res.json().data as Array<String>)
+          .catch(this.handleError)
+    }
+    getImages(dir: String, min: number, max: number): Promise<String[]>  {
+        return this.http.get('http://localhost:8089/img/fs/'  + dir + '/' + min + '/' + max, {
             headers: this.headers
         }).toPromise()
           .then(res => res.json().files as String[])
           .catch(this.handleError)               
     }
-    getImageData(filename: String): Promise<String> {
-        var body = 'filename=' + filename
+    getImageData(dirname: String, filename: String): Promise<String> {
+        var body = 'dirname=' + dirname + '&filename=' + filename
         return this.http.post('http://localhost:8089/img/fs', body, {
             headers: this.headers
         }).toPromise()

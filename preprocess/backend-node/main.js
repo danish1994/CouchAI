@@ -1,6 +1,7 @@
 const express = require('express'),
     app = express(),
     bodyparser = require('body-parser'),
+    fs = require('fs'),
     path = require('path'),
     ip = 'localhost',
     port = 8089
@@ -15,8 +16,11 @@ app.use('/', bodyparser.urlencoded({
 
 app.use('/img', require('./img'))
 app.use('/data', require('./data'))
-app.use('/dresses', express.static(path.join(__dirname, './dresses')))
-app.use('/final', express.static(path.join(__dirname, './final')))
+app.use('/', express.static(path.join(__dirname, './flipkart')))
+fs.readdirSync('./flipkart').map((dir) => {
+    app.use('/', express.static(path.join(__dirname, './flipkart/' + dir)))
+})
+app.use('/', express.static(path.join(__dirname, './final')))
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*")

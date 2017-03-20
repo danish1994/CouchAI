@@ -17,6 +17,7 @@ var clothimage_1 = require('./clothimage');
 var app_service_1 = require('./app.service');
 var AppComponent = (function () {
     function AppComponent(service) {
+        var _this = this;
         this.service = service;
         this.img = [];
         this.img_data = {};
@@ -33,6 +34,10 @@ var AppComponent = (function () {
         this.cropperSettings.preserveSize = true;
         this.cropperSettings.fileType = 'jpeg';
         this.data = {};
+        this.service.getDirs().then(function (dirs) {
+            _this.dirs = dirs;
+            console.log(_this.dirs);
+        });
     }
     AppComponent.prototype.ngDoCheck = function () {
         var data = this.img[this.counter];
@@ -55,11 +60,14 @@ var AppComponent = (function () {
             for (var i = 1; i <= this.data_fields; i++)
                 document.getElementById('value_' + i).value = '';
         }
-        this.service.getImageData(current_image.filename).then(function (img) {
+        this.service.getImageData(this.dir, current_image.filename).then(function (img) {
             var img_ele = document.getElementById('img_name'), other_ele = document.getElementById('other');
             img_ele.value = current_image.name.toString();
             var image = new Image();
             image.src = 'data:image/jpeg;base64,';
+            var temp = img.split('$');
+            img = temp[0];
+            _this.url = temp[1];
             _this.service.check(current_image.name.toString()).then(function (res) {
                 var data = JSON.parse(res.toString());
                 if (data) {
@@ -89,7 +97,7 @@ var AppComponent = (function () {
         this.img = [];
         this.saved = 'Checking...';
         var min = this.batch * this.batch_size, max = min + this.batch_size;
-        this.service.getImages(min, max).then(function (img) {
+        this.service.getImages(this.dir, min, max).then(function (img) {
             var len = img.length;
             for (var i = 0; i < len; i++)
                 _this.img.push(new clothimage_1.ClothImage(img[i], {}));
@@ -156,7 +164,7 @@ var AppComponent = (function () {
     AppComponent = __decorate([
         core_1.Component({
             selector: 'my-app',
-            template: "<div id=\"all\">\n              <img-cropper [image]=\"data\" [settings]=\"cropperSettings\" (onCrop)=\"cropped($event)\"></img-cropper><br>\n              <button (click)=\"crop()\">Crop</button>\n              <label *ngIf=\"img_load == false\">Image Loading</label>\n              <img *ngIf=\"data.image\" hidden id=\"cropped_img\" [src]=\"data.image\" [width]=\"cropperSettings.croppedWidth\" [height]=\"cropperSettings.croppedHeight\">\n              <div id=\"load\">\n                <input type=\"number\" min=\"20\" step=\"20\" [(ngModel)]=\"batch_size\"/>\n                <button (click)=\"load_batch()\">Load</button>\n                <button (click)=\"update_batch(-1)\">Previous Batch</button>\n                <button (click)=\"update_batch(1)\">Next Batch</button>\n              </div>\n              <div id=\"access\">\n                <button (click)=\"load(-1)\">Previous</button>\n                <button (click)=\"load(1)\">Next</button>\n                <input type=\"number\" [(ngModel)]=\"counter\" min=\"0\"/>\n                <button (click)=\"load(0)\">Go</button>\n              </div>\n              <div id=\"data\">\n                Name:<input type=\"text\" id=\"img_name\" readonly/>\n                Other:<input type=\"text\" id=\"other\" readonly/>\n                Data:<label *ngIf=\"data.image\">{{saved}}</label><br/>\n                <button (click)=\"add_field()\">Add Field</button>\n                <table>\n                  <thead *ngIf=\"data_fields != 0\">\n                    <th>Key</th>\n                    <th>Value</th>\n                    <th></th>\n                  </thead>\n                  <tbody id=\"fields\">\n                    <tr *ngFor=\"let i of arr\" id=\"data_{{i}}\">\n                      <td><input id=\"key_{{i}}\" type=\"text\"/></td>\n                      <td><input id=\"value_{{i}}\" type=\"text\"/></td>\n                      <td><button (click)=\"del_field()\">X</button></td>\n                    </tr>\n                  </tbody>\n                </table>\n                <button *ngIf=\"data_fields != 0\" (click)=\"save(0)\">Save</button>\n              </div>\n              <button *ngIf=\"data_fields != 0\" (click)=\"save(1)\">Crop & Save</button>\n            </div>"
+            template: "<div id=\"all\">\n              <select id=\"dir\" *ngIf=\"dirs\" [(ngModel)]=\"dir\">\n                <option *ngFor=\"let dirname of dirs\" value=\"{{dirname}}\">\n                  {{dirname}}\n                </option>\n              </select>\n              <div *ngIf=\"dir\" id=\"cloth\">\n                <img-cropper [image]=\"data\" [settings]=\"cropperSettings\" (onCrop)=\"cropped($event)\"></img-cropper><br>\n                <button (click)=\"crop()\">Crop</button>\n                <label *ngIf=\"img_load == false\">Image Loading</label>\n                <img *ngIf=\"data.image\" hidden id=\"cropped_img\" [src]=\"data.image\" [width]=\"cropperSettings.croppedWidth\" [height]=\"cropperSettings.croppedHeight\">\n                <div id=\"load\">\n                  <input type=\"number\" min=\"20\" step=\"20\" [(ngModel)]=\"batch_size\"/>\n                  <button (click)=\"load_batch()\">Load</button>\n                  <button (click)=\"update_batch(-1)\">Previous Batch</button>\n                  <button (click)=\"update_batch(1)\">Next Batch</button>\n                </div>\n                <div id=\"access\">\n                  <button (click)=\"load(-1)\">Previous</button>\n                  <button (click)=\"load(1)\">Next</button>\n                  <input type=\"number\" [(ngModel)]=\"counter\" min=\"0\"/>\n                  <button (click)=\"load(0)\">Go</button>\n                </div>\n                <div id=\"data\">\n                  Name:<input type=\"text\" id=\"img_name\" readonly/>\n                  Other:<input type=\"text\" id=\"other\" readonly/>\n                  Data:<label *ngIf=\"data.image\">{{saved}}</label><br/>\n                  Url: <a href=\"{{url}}\">Link</a>\n                  <button (click)=\"add_field()\">Add Field</button>\n                  <table>\n                    <thead *ngIf=\"data_fields != 0\">\n                      <th>Key</th>\n                      <th>Value</th>\n                      <th></th>\n                    </thead>\n                    <tbody id=\"fields\">\n                      <tr *ngFor=\"let i of arr\" id=\"data_{{i}}\">\n                        <td><input id=\"key_{{i}}\" type=\"text\"/></td>\n                        <td><input id=\"value_{{i}}\" type=\"text\"/></td>\n                        <td><button (click)=\"del_field()\">X</button></td>\n                      </tr>\n                    </tbody>\n                  </table>\n                  <button *ngIf=\"data_fields != 0\" (click)=\"save(0)\">Save</button>\n                </div>\n                <button *ngIf=\"data_fields != 0\" (click)=\"save(1)\">Crop & Save</button>\n              </div>\n            </div>"
         }), 
         __metadata('design:paramtypes', [app_service_1.Service])
     ], AppComponent);

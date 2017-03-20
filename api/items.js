@@ -2,7 +2,7 @@ var aff = require('flipkart-affiliate'),
     async = require('async'),
     fs = require('fs'),
     cp = require('child_process'),
-    json_file = './json/flipkart.json',
+    json_file = './json/flipkart-final.json',
     fkres = [],
     fkc = aff.createClient({
         FkAffId: 'rohitjais1',
@@ -24,7 +24,7 @@ var aff = require('flipkart-affiliate'),
         })
     },
     getProductFeedFlipkart = (url, retailerId, iteration) => {
-        if (iteration < 100) {
+        if (iteration < 300) {
             fkc.getProductsFeed({
                 url: url
             }, (err, result) => {
@@ -65,7 +65,8 @@ var aff = require('flipkart-affiliate'),
                     url: item.imageUrls.unknown,
                     class: item.productBrand.toLowerCase(),
                     model: item.categoryPath.substring(item.categoryPath.lastIndexOf('>') + 1).toLowerCase(),
-                    color: item.attributes.color.toLowerCase()
+                    color: item.attributes.color.toLowerCase(),
+		    url: item.productUrl
                 })
             } catch (error) {
                 console.log(error)
@@ -146,12 +147,12 @@ var aff = require('flipkart-affiliate'),
         return models
     }
 
-//getCategoryFeedFlipkart()
+getCategoryFeedFlipkart()
 /*
 data = require('./json/flipkart.json')
 models = filterData(data)
 fs.writeFileSync('./json/final.json', JSON.stringify(models))
 */
-models = require('./json/final.json')
-console.log(models.length)
+//models = require('./json/final.json')
+//console.log(models.length)
 //downloadData(models[7])
