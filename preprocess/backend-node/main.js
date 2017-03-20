@@ -16,9 +16,8 @@ app.use('/', bodyparser.urlencoded({
 
 app.use('/img', require('./img'))
 app.use('/data', require('./data'))
-app.use('/', express.static(path.join(__dirname, './flipkart')))
 fs.readdirSync('./flipkart').map((dir) => {
-    app.use('/', express.static(path.join(__dirname, './flipkart/' + dir)))
+    app.use('/' + dir, express.static(path.join(__dirname, './flipkart/' + dir)))
 })
 app.use('/', express.static(path.join(__dirname, './final')))
 

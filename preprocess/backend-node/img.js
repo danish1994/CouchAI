@@ -17,14 +17,14 @@ router.get('/fs/dir', (request, response) => {
 
 router.get('/fs/:dir/:beg/:end', (request, response) => {
     params = request.params
-    files = fs.readdirSync('./' + params.dir).slice(Number(params.beg), Number(params.end))
+    files = fs.readdirSync('./flipkart/' + params.dir).slice(Number(params.beg), Number(params.end))
     response.send({
         files: files
     })
 })
 
 router.post('/fs', (request, response) => {
-    data = fs.readFileSync('./' + request.body.dirname + '/' + request.body.filename)
+    data = fs.readFileSync('./flipkart/' + request.body.dirname + '/' + request.body.filename)
     id = request.body.filename.split('-')[0]
     for(i=0;i<json.length;i++)
         if(json[i]['id'] == id)
