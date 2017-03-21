@@ -15,8 +15,7 @@ var Service = (function () {
     function Service(http) {
         this.http = http;
         this.headers = new http_1.Headers({
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Access-Control-Allow-Origin': '*'
+            'Content-Type': 'application/x-www-form-urlencoded'
         });
     }
     Service.prototype.getDirs = function () {
@@ -50,7 +49,7 @@ var Service = (function () {
             .catch(this.handleError);
     };
     Service.prototype.saveData = function (cloth) {
-        var body = 'name=' + cloth.name + '&data=' + JSON.stringify(cloth.data);
+        var body = 'name=' + cloth.name + '&data=' + JSON.stringify(cloth.data) + '&bounds=' + JSON.stringify(cloth.bounds);
         return this.http.post('http://localhost:8089/data', body, {
             headers: this.headers
         }).toPromise()

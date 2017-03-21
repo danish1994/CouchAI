@@ -4,6 +4,7 @@ export class ClothImage {
     extension: String
     filename: String
     data: Object
+    bounds: Object
     constructor(name: String, data: Object) {
         if(Object.keys(data).length == 0) {
             let temp = name.split('-'),
@@ -13,10 +14,12 @@ export class ClothImage {
             this.extension = tmp.slice(1).join('.')
             this.filename = this.name + '-' + this.metaname + '.' + this.extension
             this.data = data
+            this.bounds = {}
         }
         else {
             this.name = name
             this.data = data
+            this.bounds = {}
         }
     }
 }

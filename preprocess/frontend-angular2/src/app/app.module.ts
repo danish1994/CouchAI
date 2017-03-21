@@ -75,6 +75,7 @@ export class AppComponent implements DoCheck {
   saved: string = 'Checking...'
   current_keys: Array<String>
   img_load: boolean = false
+  img_bounds: Object
   url: String
   @ViewChild(ImageCropperComponent) cropper: ImageCropperComponent
   constructor(private service: Service) {
@@ -185,6 +186,14 @@ export class AppComponent implements DoCheck {
   cropped(bounds: Bounds) {
     this.cropperSettings.croppedHeight = bounds.bottom - bounds.top;
     this.cropperSettings.croppedWidth = bounds.right - bounds.left;
+    this.img_bounds = {}
+    this.img_bounds['left'] = bounds.left
+    this.img_bounds['top'] = bounds.top
+    this.img_bounds['bottom'] = bounds.bottom
+    this.img_bounds['right'] = bounds.right
+    this.img_bounds['width'] = bounds.width
+    this.img_bounds['height'] = bounds.height
+    console.log(this.img_bounds)
   }
   crop() {
     let image_data = ( < HTMLImageElement > document.getElementById('cropped_img')).src,
@@ -197,16 +206,18 @@ export class AppComponent implements DoCheck {
   }
   save(number: number) {
     console.log('Saving data')
-    if (number)
-      this.crop()
     let current_image = this.img[this.counter]
     current_image.data = {}
+    current_image.bounds = this.img_bounds
     for (let i = 1; i <= this.data_fields; i++) {
       let key = ( < HTMLInputElement > document.getElementById('key_' + i)).value,
         val = ( < HTMLInputElement > document.getElementById('value_' + i)).value
       current_image.data[key] = val
     }
-    this.service.saveData(current_image).then((res) => console.log(res))
+    this.service.saveData(current_image).then((res) => {
+      if(number)
+        this.crop()
+    })
   }
 }
 

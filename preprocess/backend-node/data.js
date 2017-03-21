@@ -11,11 +11,12 @@ db.once('open', () => {
     var clothSchema = mongoose.Schema({
             name: 'String',
             extension: 'String',
-            data: 'Object'
+            data: 'Object',
+            bounds: 'Object'
         }, {
-            collection: 'cloth'
+            collection: 'clothes'
         }),
-        cloth = mongoose.model('cloth', clothSchema)
+        cloth = mongoose.model('clothes', clothSchema)
     router.get('/:name', (request, response) => {
         cloth.findOne({
             name: request.params.name
@@ -48,6 +49,7 @@ db.once('open', () => {
             console.log(res)
             if (res) {
                 res.data = JSON.parse(body.data)
+                res.bounds = JSON.parse(body.bounds)
                 res.save()
                 response.send({
                     data: 'Updated'
@@ -55,7 +57,9 @@ db.once('open', () => {
             } else
                 obj = new cloth({
                     name: body.name,
-                    data: JSON.parse(body.data)
+                    data: JSON.parse(body.data),
+ 
+                    bounds: JSON.parse(body.bounds)
                 }).save((error, res, num) => {
                     if (error)
                         response.send({

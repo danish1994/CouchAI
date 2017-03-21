@@ -8,8 +8,7 @@ import { ClothImage } from './clothimage'
 
 export class Service {
     headers: Headers = new Headers({
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Access-Control-Allow-Origin': '*'
+        'Content-Type': 'application/x-www-form-urlencoded'
     })
     constructor(private http: Http) { }
     getDirs(): Promise<Array<String>> {
@@ -43,7 +42,7 @@ export class Service {
           .catch(this.handleError)
     }
     saveData(cloth: ClothImage): Promise<Object> {
-        var body = 'name=' + cloth.name + '&data=' + JSON.stringify(cloth.data)
+        var body = 'name=' + cloth.name + '&data=' + JSON.stringify(cloth.data) + '&bounds=' + JSON.stringify(cloth.bounds)
         return this.http.post('http://localhost:8089/data', body, {
             headers: this.headers
         }).toPromise()

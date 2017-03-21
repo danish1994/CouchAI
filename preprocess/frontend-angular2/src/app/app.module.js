@@ -136,6 +136,14 @@ var AppComponent = (function () {
     AppComponent.prototype.cropped = function (bounds) {
         this.cropperSettings.croppedHeight = bounds.bottom - bounds.top;
         this.cropperSettings.croppedWidth = bounds.right - bounds.left;
+        this.img_bounds = {};
+        this.img_bounds['left'] = bounds.left;
+        this.img_bounds['top'] = bounds.top;
+        this.img_bounds['bottom'] = bounds.bottom;
+        this.img_bounds['right'] = bounds.right;
+        this.img_bounds['width'] = bounds.width;
+        this.img_bounds['height'] = bounds.height;
+        console.log(this.img_bounds);
     };
     AppComponent.prototype.crop = function () {
         var image_data = document.getElementById('cropped_img').src, image_name = document.getElementById('img_name').value;
@@ -146,16 +154,19 @@ var AppComponent = (function () {
         });
     };
     AppComponent.prototype.save = function (number) {
+        var _this = this;
         console.log('Saving data');
-        if (number)
-            this.crop();
         var current_image = this.img[this.counter];
         current_image.data = {};
+        current_image.bounds = this.img_bounds;
         for (var i = 1; i <= this.data_fields; i++) {
             var key = document.getElementById('key_' + i).value, val = document.getElementById('value_' + i).value;
             current_image.data[key] = val;
         }
-        this.service.saveData(current_image).then(function (res) { return console.log(res); });
+        this.service.saveData(current_image).then(function (res) {
+            if (number)
+                _this.crop();
+        });
     };
     __decorate([
         core_1.ViewChild(ng2_img_cropper_1.ImageCropperComponent), 

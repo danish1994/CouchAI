@@ -8,10 +8,12 @@ var ClothImage = (function () {
             this.extension = tmp.slice(1).join('.');
             this.filename = this.name + '-' + this.metaname + '.' + this.extension;
             this.data = data;
+            this.bounds = {};
         }
         else {
             this.name = name;
             this.data = data;
+            this.bounds = {};
         }
     }
     return ClothImage;
