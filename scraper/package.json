@@ -1,17 +1,14 @@
 {
-  "name": "api",
+  "name": "scraper",
   "version": "1.0.0",
   "description": "",
-  "main": "download.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "async": "^2.1.4",
-    "flipkart-affiliate": "^1.1.0",
-    "fs-extra": "^2.1.2",
-    "request": "^2.79.0"
+    "async": "^2.2.0"
   }
 }

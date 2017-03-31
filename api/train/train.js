@@ -20,6 +20,7 @@ router.post('/', (request, response) => {
     body = request.body
     name = body.name
     image_dir = 'img/' + name
+    console.log(name)
     train_result = ''
     try {
         fs.statSync('../' + image_dir)
@@ -62,6 +63,7 @@ router.post('/', (request, response) => {
             console.log(error)
     }
     model_classes = fs.readdirSync('../' + image_dir).map((dir) => {
+        console.log(dir)
         return {
             name: dir,
             files: fs.readdirSync('../' + image_dir + '/' + dir).length

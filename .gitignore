@@ -7,6 +7,7 @@
 *.zip
 /api/train/node_modules
 /api/test/node_modules
+/preprocess/node_modules
 /preprocess/backend-node/node_modules
 /preprocess/backend-node/flipkart/dresses
 /preprocess/backend-node/flipkart/kurtas
@@ -17,3 +18,4 @@
 /preprocess/backend-node/final
 /preprocess/frontend-angular2/node_modules
 *.js.map
+/scraper/node_modules
