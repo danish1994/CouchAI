@@ -1,13 +1,41 @@
 var casper = require('casper').create(),
     fs = require('fs'),
-    res = []
+    current_length = 0,
+    data_length = []
 
 fs.changeWorkingDirectory(fs.absolute('./craftsvilla'))
 
-const url = 'http://www.craftsvilla.com/',
-    data = JSON.parse(fs.read('links-1.json')).slice(4, 7)
+const arg = casper.cli.args,
+    filename = 'links-' + arg[2] + '.json',
+    save_filename = 'data-' + arg[2] + '-' + arg[3] + '.json',
+    total_length = parseInt(arg[1]),
+    url = 'http://www.craftsvilla.com/',
+    all_data = JSON.parse(fs.read(filename))
 
 fs.changeWorkingDirectory(fs.absolute('./data'))
+
+function range(len, data, resume) {
+    i = 0
+    for(i;i<data.length;i++)
+        if(len < data[i].links.length) {
+            if(resume == 1)
+                data[i].links = data[i].links.slice(len)
+            else
+                data[i].links = data[i].links.slice(0, len)
+            break
+        }
+    return data.slice(i, i+1)
+}
+
+if(fs.exists(save_filename)) {
+    data_length = JSON.parse(fs.read(save_filename)).length
+    current_length = data_length
+    data = range(total_length, all_data, 0)
+    data = range(data_length, data, 1)
+}
+else {
+    data = range(total_length, all_data, 0)
+}
 
 casper.start(url)
     .then(function () {
@@ -48,10 +76,13 @@ casper.start(url)
                             url: link
                         }
                     }, link, entry.name)
-                    this.echo('->' + (link_index + 1) + '/' + entry.links.length, 'INFO')
+                    this.echo('->' + (current_length + 1) + '/' + total_length, 'INFO')
+                    res = []
+                    if(fs.exists(save_filename))
+                        res = JSON.parse(fs.read(save_filename))
                     res.push(obj)
-                    if (res.length == entry.links.length)
-                        fs.write(entry.name + '.json', JSON.stringify(res), 'w')
+                    fs.write(save_filename, JSON.stringify(res), 'w')
+                    current_length++
                 })
             })
         })

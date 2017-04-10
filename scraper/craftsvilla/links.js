@@ -1,5 +1,6 @@
 var casper = require('casper').create(),
     fs = require('fs'),
+    utils = require('utils'),
     res = [],
     links = null,
     link = null
@@ -36,20 +37,26 @@ casper.start()
                 url = ''
             if (find_link(entry.name)) {
                 casper.thenOpen(entry.url)
+                    .wait(5000)
                     .then(function () {
                         pages = casper.evaluate(function () {
                             return document.getElementById('pageCount').value
                         })
-                        this.echo(this.getCurrentUrl())
                         casper.repeat(pages, function () {
                             obj = casper.evaluate(function () {
                                 temp = []
                                 list = document.querySelectorAll('div.product-img')
                                 for (i = 0; i < list.length; i++)
-                                    temp.push(list[i].href)
-                                document.getElementById('nextPage').children[0].click()
+                                    temp.push(list[i].children[0].href)
+                                pages = document.querySelectorAll('li#pager')
+                                arr = []
+                                for(i=0;i<pager.length;i++)
+                                    arr.push(pages[i].classList.length)
+                                index = arr.indexOf(1)
+                                pages[index+1].children[0].click()
                                 return temp
                             })
+                            obj = utils.unique(obj)
                             data = data.concat(obj)
                         }).then(function () {
                             res.push({
@@ -57,7 +64,7 @@ casper.start()
                                 links: data,
                                 entries: data.length
                             })
-                            this.echo((index + 1) + ' Type ' + entry.name + ' -> ' + res[res.length - 1].entries + ' (' + pages + ')', 'INFO')
+                            this.echo((index + 1) + ' ' + entry.name + ' -> ' + res[res.length - 1].entries + ' (' + pages + ')', 'INFO')
                             mode = 'a'
                             if (link == null)
                                 mode = 'w'
