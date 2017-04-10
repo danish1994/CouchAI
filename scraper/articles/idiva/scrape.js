@@ -46,13 +46,14 @@ casper.start(uri)
                             image: document.querySelector('div.big-image').lastElementChild.src,
                             info: document.querySelector(info_str).children[0].innerText,
                             title: document.querySelector('div.big-image-caption').firstElementChild.innerText,
-                            type: link.type
+                            type: link.type,
+                            url: link.url
                         }
                     }, link)
-                    if(obj)
+                    if(obj) {
                         this.echo(JSON.stringify(obj))
-                    if(obj)
                         res.push(obj)
+                    }
                     current++
                     this.echo(current + '/' + total, 'INFO')
                     if(current == total)
