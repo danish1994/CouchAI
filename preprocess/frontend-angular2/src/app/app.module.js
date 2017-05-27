@@ -206,6 +206,7 @@ var AppComponent = (function () {
         }
         console.log(current_image.data);
         this.service.saveData(current_image).then(function (res) {
+            console.log('Save', res);
             if (number)
                 _this.crop();
         });

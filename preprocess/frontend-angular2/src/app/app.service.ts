@@ -61,7 +61,8 @@ export class Service {
           .catch(this.handleError)
     }
     saveData(cloth: ClothImage): Promise<Object> {
-        var body = 'name=' + cloth.name + '&data=' + JSON.stringify(cloth.data) + '&bounds=' + JSON.stringify(cloth.bounds)
+        var body = 'name=' + cloth.name + '&data=' + JSON.stringify(cloth.data) + '&bounds=' + JSON.stringify({})
+        console.log(body)
         return this.http.post(this.proto + this.ip + ':' + this.port + '/data', body, {
             headers: this.headers
         }).toPromise()

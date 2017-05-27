@@ -65,8 +65,7 @@ db.once('open', () => {
                 obj = new cloth({
                     name: body.name,
                     data: JSON.parse(body.data),
- 
-                    bounds: JSON.parse(body.bounds)
+                    bounds: JSON.parse(body.bounds) || {}
                 }).save((error, res, num) => {
                     if (error)
                         response.send({

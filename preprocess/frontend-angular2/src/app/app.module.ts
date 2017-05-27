@@ -208,6 +208,7 @@ export class AppComponent implements DoCheck {
     }
     console.log(current_image.data)
     this.service.saveData(current_image).then((res) => {
+      console.log('Save', res)
       if(number)
         this.crop()
     })
