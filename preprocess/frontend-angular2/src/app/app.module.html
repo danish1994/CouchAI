@@ -1,20 +1,18 @@
 <div id="all" class="container">
-  <!-->
   <div *ngIf="dirs" id="select-category">
     <div class="btn-group" dropdown>
-      <button dropdownToggle type="button" class="btn btn-primary dropdown-toggle">
+      <button dropdownToggle type="button" class="btn btn-primary dropdown-toggle" id="category">
     Select Category <span class="caret"></span>
   </button>
       <ul *dropdownMenu class="dropdown-menu" role="menu" id="category" (click)="updateDir($event)">
         <li *ngFor="let dirname of dirs" role="menuitem">
-          <a class="dropdown-item">
+          <a class="dropdown-item" id="{{dirname}}">
             {{dirname}}
           </a>
         </li>
       </ul>
     </div>
   </div>
-  <-->
     <input type="hidden" id="img_name" readonly class="form-control" /><br/>
     <div *ngIf="dir" id="cloth" class="text-center">
       <!-->
@@ -38,8 +36,8 @@
           <button type="button" id="next" class="btn btn-primary" [disabled]="disableNext()" (click)="load(1)" btnCheckbox btnCheckboxTrue="1"
             btnCheckboxFalse="0">
         Next
-      </button><br/>
-          <input type="number" [(ngModel)]="counter" min="0" class="form-control" id="img_number"/>
+      </button><br/><br/>
+          <input type="number" [(ngModel)]="counter" min="0" class="form-control" id="img_number"/><br/>
           <button type="button" class="btn btn-primary" (click)="goto()" btnCheckbox btnCheckboxTrue="1" btnCheckboxFalse="0">
         Go
       </button>
@@ -58,7 +56,7 @@
                   Select {{i}} <span class="caret"></span>
                 </button>
                     <ul *dropdownMenu class="dropdown-menu" role="menu" id="value_{{i}}" (click)="updateVal($event)">
-                      <li *ngFor="let value of values[keys.indexOf(i)]" role="menuitem">
+                      <li *ngFor="let value of values[i]" role="menuitem">
                         <a class="dropdown-item" id="{{i}}_{{value}}">
                       {{value}}
                     </a>
@@ -69,7 +67,7 @@
               </tr>
             </tbody>
           </table>
-          <br/><br/>
+          <br/>
           <button (click)="save(0)" type="button" class="btn btn-primary" btnCheckbox btnCheckboxTrue="1" btnCheckboxFalse="0">
         Save
       </button>

@@ -30,6 +30,8 @@ body {
 
 #img_number {
     width: 20%;
+    margin: 0 auto;
+    float: none;
 }
 
 #img_name {

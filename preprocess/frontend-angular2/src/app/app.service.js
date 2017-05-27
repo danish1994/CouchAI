@@ -45,7 +45,7 @@ var Service = (function () {
     };
     Service.prototype.getCategoryCount = function (category) {
         var body = 'category=' + category;
-        return this.http.post(this.proto + this.ip + ':' + this.port + '/categories', body, {
+        return this.http.post(this.proto + this.ip + ':' + this.port + '/categories/count', body, {
             headers: this.headers
         }).toPromise()
             .then(function (res) { return res.json().count; })

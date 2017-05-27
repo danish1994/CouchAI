@@ -5,7 +5,7 @@ const json = require('./categories.json'),
 
 router.get('/', (request, response) => {
     response.send({
-        data: json
+        data: fs.readdirSync(dir_path)
     })
 })
 

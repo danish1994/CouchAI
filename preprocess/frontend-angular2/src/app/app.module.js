@@ -22,8 +22,6 @@ var AppComponent = (function () {
         this.service = service;
         this.img = [];
         this.img_data = {};
-        this.dir = 'Western Dresses';
-        this.dirs = [];
         this.counter = 0;
         this.min_counter = 0;
         this.max_counter = 0;
@@ -33,21 +31,16 @@ var AppComponent = (function () {
         this.data_fields = 0;
         this.saved = 'Checking...';
         this.img_load = false;
-        this.indices = [0, 1, 2];
-        this.keys = ['Type', 'Length', 'Sleeves', 'Neck Line', 'Pattern', 'Color'];
+        this.keys = [];
         this.values = Array(this.keys.length).fill([]);
-        this.cropperSettings = new ng2_img_cropper_1.CropperSettings();
-        this.cropperSettings.keepAspect = false;
-        this.cropperSettings.noFileInput = true;
-        this.cropperSettings.preserveSize = true;
-        this.cropperSettings.fileType = 'jpeg';
-        this.data = {};
-        this.service.getCategories(this.dir).then(function (categories) {
-            _this.values = categories;
-            _this.service.getCategoryCount(_this.dir).then(function (count) {
-                _this.max_counter = Number(count);
-                _this.load_batch();
-            });
+        /*this.cropperSettings = new CropperSettings()
+        this.cropperSettings.keepAspect = false
+        this.cropperSettings.noFileInput = true
+        this.cropperSettings.preserveSize = true
+        this.cropperSettings.fileType = 'jpeg'
+        this.data = {}*/
+        this.service.getDirs().then(function (dirs) {
+            _this.dirs = dirs;
         });
         /*this.service.getDirs().then((dirs) => {
           this.dirs = dirs
@@ -69,7 +62,29 @@ var AppComponent = (function () {
         }
         catch (error) { }
     };
-    AppComponent.prototype.updateVal = function (event, id) {
+    AppComponent.prototype.clear = function () {
+        for (var i = 0; i < this.keys.length; i++)
+            document.getElementById('button_' + this.keys[i]).innerText = 'Select ' + this.keys[i].toString();
+    };
+    AppComponent.prototype.updateDir = function (event) {
+        var _this = this;
+        var e = event || window.event;
+        var target = e.target || e.srcElement;
+        this.dir = target.id;
+        this.batch = 0;
+        this.counter = 0;
+        document.getElementById('category').innerText = target.id;
+        this.service.getCategories(this.dir).then(function (categories) {
+            _this.keys = Object.keys(categories);
+            _this.values = categories;
+            console.log(_this.keys, _this.values);
+            _this.service.getCategoryCount(_this.dir).then(function (count) {
+                _this.max_counter = Number(count);
+                _this.load_batch();
+            });
+        });
+    };
+    AppComponent.prototype.updateVal = function (event) {
         var e = event || window.event;
         var target = e.target || e.srcElement;
         var temp = target.id.split('_');

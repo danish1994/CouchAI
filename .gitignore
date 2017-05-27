@@ -15,6 +15,7 @@
 /preprocess/backend-node/final
 /preprocess/frontend-angular2/node_modules
 /preprocess (copy)
+/preprocess-ai/node_modules
 *.js.map
 /scraper
 /sheet-json/node_modules

@@ -6,6 +6,8 @@ bash scripts
 -clean
 -unpack
 -run be & fe
+auto data
+-sheet->json
 
 ---1
 CORS !
@@ -15,8 +17,8 @@ img-bounds !
 
 ---2
 direct goto !
-remove batch (be + fe)
-css
+remove batch (be + fe) ~
+css !
 
 ---3
-reduce and clean
+reduce and clean ~

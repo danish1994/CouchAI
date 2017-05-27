@@ -19,8 +19,8 @@ export class AppComponent implements DoCheck {
   img: ClothImage[] = []
   img_data: Object = {}
   data: Object
-  dir: String = 'Western Dresses'
-  dirs: Array<String> = []
+  dir: String
+  dirs: Array<String>
   value: number
   counter: number = 0
   min_counter: number = 0
@@ -35,23 +35,18 @@ export class AppComponent implements DoCheck {
   img_load: boolean = false
   img_bounds: Object
   url: String
-  indices: Array<Number> = [0, 1, 2]
-  keys: Array<String> = ['Type', 'Length', 'Sleeves', 'Neck Line', 'Pattern', 'Color']
+  keys: Array<String> = []
   values: Array<Array<String>> = Array(this.keys.length).fill([])
   @ViewChild(ImageCropperComponent) cropper: ImageCropperComponent
   constructor(private service: Service) {
-    this.cropperSettings = new CropperSettings()
+    /*this.cropperSettings = new CropperSettings()
     this.cropperSettings.keepAspect = false
     this.cropperSettings.noFileInput = true
     this.cropperSettings.preserveSize = true
     this.cropperSettings.fileType = 'jpeg'
-    this.data = {}
-    this.service.getCategories(this.dir).then((categories) => {
-      this.values = categories
-      this.service.getCategoryCount(this.dir).then((count) => {
-        this.max_counter = Number(count)
-        this.load_batch()
-      })
+    this.data = {}*/
+    this.service.getDirs().then((dirs) => {
+      this.dirs = dirs
     })
     /*this.service.getDirs().then((dirs) => {
       this.dirs = dirs
@@ -76,7 +71,24 @@ export class AppComponent implements DoCheck {
     for(let i = 0;i < this.keys.length; i++)
       document.getElementById('button_' + this.keys[i]).innerText = 'Select ' + this.keys[i].toString()
   } 
-  updateVal(event: any, id: String) {
+  updateDir(event: any) {
+    let e = event || window.event
+    let target = e.target || e.srcElement
+    this.dir = target.id
+    this.batch = 0
+    this.counter = 0
+    document.getElementById('category').innerText = target.id
+    this.service.getCategories(this.dir).then((categories) => {
+      this.keys = Object.keys(categories)
+      this.values = categories
+      console.log(this.keys, this.values)
+      this.service.getCategoryCount(this.dir).then((count) => {
+        this.max_counter = Number(count)
+        this.load_batch()
+      })
+    })
+  }
+  updateVal(event: any) {
     let e = event || window.event
     let target = e.target || e.srcElement
     let temp = target.id.split('_')

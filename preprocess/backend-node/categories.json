@@ -1,10 +1,1 @@
-{
-    "Western Dresses": [
-        ["Skater", "Maxi", "Lace", "Empire", "Shirt Dress", "Gown", "Bodycon", "Strapless", "Halter Dress"],
-        ["Knee Length", "Midi", "High", "Low"],
-        ["Full", "3/4", "1/2", "1/4", "Sleeveless", "Off Shoulder"],
-        ["V-Neck", "Collar", "Cowl", "Halter", "High Collar", "Off Shoulder", "One Shoulder", "Round", "Strapless"],
-        ["Polka", "Stripes", "Checks", "Floral", "Solid"],
-        ["Red", "Orange", "Yellow", "Blue", "Purple", "Pink", "Indigo", "Green", "Brown", "Black", "Grey", "White"]
-    ]
-}
+{"Western Dresses":{"Length":["Mini","Knee Length","Midi Length","Maxi"],"Sleeves":["Sleeveless","3/4","1/2","1/4","Full","Spaghetti Strap"],"NeckLine":["Scoop","V-Neck","Off Shoulder","Halter","High Neck","Strapless","Asymmetric","Jewel/Round Neck","Boat Neck"],"Pattern":["Plaid","Floral","Windowpane","Gingham"]},"Western Tops":{"NeckLine":["Collar","Round","V-Neck","Peter Pan","Turtle neck"]}}
