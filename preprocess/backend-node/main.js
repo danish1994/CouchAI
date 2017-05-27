@@ -22,11 +22,12 @@ app.use('/', bodyparser.urlencoded({
 
 app.use('/img', require('./img'))
 app.use('/data', require('./data'))
-fs.readdirSync('./flipkart').map((dir) => {
-    app.use('/' + dir, express.static(path.join(__dirname, './flipkart/' + dir)))
+app.use('/categories', require('./categories'))
+fs.readdirSync('./couch').map((dir) => {
+    app.use('/' + dir, express.static(path.join(__dirname, './couch/' + dir)))
 })
 app.use('/', express.static(path.join(__dirname, './final')))
 
-app.listen(port, ip, () => {
+app.listen(port, () => {
     console.log('Server on ' + port)
 })

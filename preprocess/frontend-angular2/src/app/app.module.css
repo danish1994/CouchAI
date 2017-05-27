@@ -1,0 +1,42 @@
+body {
+    text-align: center;
+}
+
+#all {
+    text-align: center;
+}
+
+#image {
+    padding: 10px;
+}
+
+#load {
+    padding: 10px;
+}
+
+#access {
+    padding: 10px;
+}
+
+#data {
+    padding: 10px;
+    text-align: center;
+}
+
+#fields {
+    padding: 4px;
+    text-align: center;
+}
+
+#img_number {
+    width: 20%;
+}
+
+#img_name {
+    width: 20%;
+}
+
+#product_image {
+    width: 280px;
+    height: 400px;
+}

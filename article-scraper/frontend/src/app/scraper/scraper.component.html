@@ -1,0 +1,16 @@
+<div id="scraper">
+  <div id="select">
+    <select id="website">
+    <option *ngFor="let site of websites">{{site}}</option>
+  </select>
+    <button id="data" (click)="scrape(this)" class="btn">Scrape</button>
+    <a routerLink="/home" routerLinkActive="active">
+      <button class="btn">Back</button>
+    </a>
+  </div>
+  <div class="shell-wrap">
+    <p class="shell-top-bar">Console</p>
+    <ul id="list" class="shell-body">
+    </ul>
+  </div>
+</div>

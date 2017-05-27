@@ -17,13 +17,20 @@ db.once('open', () => {
             collection: 'clothes'
         }),
         cloth = mongoose.model('clothes', clothSchema)
+    
+    try {
+        fs.statSync('./final')
+    } catch(error) {
+        fs.mkdirSync('./final')
+    }
+
     router.get('/:name', (request, response) => {
         cloth.findOne({
             name: request.params.name
         }).exec((error, res) => {
             if (res) {
                 try {
-                img = fs.readFileSync('./final/' + res.name + '.jpg').toString('base64')
+                img = fs.readFileSync('./final/' + res.name).toString('base64')
                 } catch(error) {
                     img = null
                 }

@@ -6,7 +6,7 @@ var ClothImage = (function () {
             this.name = temp[0];
             this.metaname = tmp[0];
             this.extension = tmp.slice(1).join('.');
-            this.filename = this.name + '-' + this.metaname + '.' + this.extension;
+            this.filename = this.name;
             this.data = data;
             this.bounds = {};
         }

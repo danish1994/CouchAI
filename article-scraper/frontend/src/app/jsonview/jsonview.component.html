@@ -1,0 +1,13 @@
+<div id="table">
+  <table>
+    <th *ngFor="let header of headers">{{header}}</th>
+    <tr *ngFor="let json of arr">
+      <td>{{json.id}}</td>
+      <td>{{json.image}}</td>
+      <td>{{json.title}}</td>
+      <td>{{json.category}}</td>
+      <td>{{json.desc}}</td>
+      <td>{{json.url}}</td>
+    </tr>
+  </table>
+</div>

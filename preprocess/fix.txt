@@ -1,0 +1,22 @@
+---0
+bash scripts
+-login
+-pack
+-update
+-clean
+-unpack
+-run be & fe
+
+---1
+CORS !
+max-range !
+min-range !
+img-bounds !
+
+---2
+direct goto !
+remove batch (be + fe)
+css
+
+---3
+reduce and clean

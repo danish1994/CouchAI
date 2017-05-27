@@ -1,0 +1,19 @@
+{
+  "name": "article-scraper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.4.0",
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "mongoose": "^4.9.8",
+    "mongoose-findorcreate": "^1.0.1",
+    "mongoose-timestamps": "0.0.1"
+  }
+}

@@ -13,6 +13,7 @@ var platform_browser_1 = require('@angular/platform-browser');
 var http_1 = require('@angular/http');
 var forms_1 = require('@angular/forms');
 var ng2_img_cropper_1 = require('ng2-img-cropper');
+var ngx_bootstrap_1 = require('ngx-bootstrap');
 var clothimage_1 = require('./clothimage');
 var app_service_1 = require('./app.service');
 var AppComponent = (function () {
@@ -21,50 +22,71 @@ var AppComponent = (function () {
         this.service = service;
         this.img = [];
         this.img_data = {};
+        this.dir = 'Western Dresses';
+        this.dirs = [];
         this.counter = 0;
+        this.min_counter = 0;
+        this.max_counter = 0;
+        this.img_number = 0;
         this.batch = 0;
-        this.batch_size = 0;
+        this.batch_size = 20;
         this.data_fields = 0;
-        this.arr = [];
         this.saved = 'Checking...';
         this.img_load = false;
+        this.indices = [0, 1, 2];
+        this.keys = ['Type', 'Length', 'Sleeves', 'Neck Line', 'Pattern', 'Color'];
+        this.values = Array(this.keys.length).fill([]);
         this.cropperSettings = new ng2_img_cropper_1.CropperSettings();
         this.cropperSettings.keepAspect = false;
         this.cropperSettings.noFileInput = true;
         this.cropperSettings.preserveSize = true;
         this.cropperSettings.fileType = 'jpeg';
         this.data = {};
-        this.service.getDirs().then(function (dirs) {
-            _this.dirs = dirs;
-            console.log(_this.dirs);
+        this.service.getCategories(this.dir).then(function (categories) {
+            _this.values = categories;
+            _this.service.getCategoryCount(_this.dir).then(function (count) {
+                _this.max_counter = Number(count);
+                _this.load_batch();
+            });
         });
+        /*this.service.getDirs().then((dirs) => {
+          this.dirs = dirs
+          console.log(this.dirs)
+        })*/
     }
     AppComponent.prototype.ngDoCheck = function () {
-        var data = this.img[this.counter];
+        var data = this.img[this.counter - this.batch * this.batch_size];
         try {
             if (data.data != undefined && Object.keys(data.data).length != 0) {
-                for (var i = 1; i <= this.data_fields; i++) {
-                    var key_ele = document.getElementById('key_' + i), val_ele = document.getElementById('value_' + i);
-                    key_ele.value = this.current_keys[i - 1].toString();
-                    val_ele.value = data.data[this.current_keys[i - 1].toString()];
+                for (var i = 0; i < this.keys.length; i++) {
+                    if (data.data[this.keys[i].toString()] == '')
+                        document.getElementById('button_' + this.keys[i]).innerText = 'Select ' + this.keys[i].toString();
+                    else
+                        document.getElementById('button_' + this.keys[i]).innerText = data.data[this.keys[i].toString()].toString();
                 }
                 this.saved = 'Loaded';
             }
         }
         catch (error) { }
     };
+    AppComponent.prototype.updateVal = function (event, id) {
+        var e = event || window.event;
+        var target = e.target || e.srcElement;
+        var temp = target.id.split('_');
+        document.getElementById('button_' + temp[0]).innerText = temp[1];
+    };
     AppComponent.prototype.load_image = function () {
         var _this = this;
-        var current_image = this.img[this.counter];
-        if (this.data_fields > 0) {
-            for (var i = 1; i <= this.data_fields; i++)
-                document.getElementById('value_' + i).value = '';
-        }
+        var current_image = this.img[this.counter - this.batch * this.batch_size];
+        for (var i = 0; i < this.keys.length; i++)
+            document.getElementById('button_' + this.keys[i]).innerText = 'Select ' + this.keys[i].toString();
         this.service.getImageData(this.dir, current_image.filename).then(function (img) {
-            var img_ele = document.getElementById('img_name'), other_ele = document.getElementById('other');
+            var img_ele = document.getElementById('img_name');
             img_ele.value = current_image.name.toString();
             var image = new Image();
             image.src = 'data:image/jpeg;base64,';
+            var image_base_ele = document.getElementById('product_image');
+            image_base_ele.src = 'data:image/jpeg;base64,' + img;
             var temp = img.split('$');
             img = temp[0];
             _this.url = temp[1];
@@ -75,8 +97,6 @@ var AppComponent = (function () {
                     _this.current_keys = Object.keys(data.data);
                     _this.data_fields = _this.current_keys.length;
                     current_image.data = data.data;
-                    other_ele.value = '';
-                    _this.arr = Array(_this.data_fields).fill(1).map(function (x, i) { return i + 1; });
                     if (data.imgData != null)
                         image.src += data.imgData;
                     else
@@ -84,10 +104,9 @@ var AppComponent = (function () {
                 }
                 else {
                     _this.saved = 'No Data';
-                    other_ele.value = current_image.metaname.toString();
                     image.src += img;
                 }
-                _this.cropper.setImage(image);
+                //this.cropper.setImage(image)
                 _this.img_load = true;
             });
         });
@@ -112,26 +131,29 @@ var AppComponent = (function () {
         this.load_batch();
     };
     AppComponent.prototype.load = function (number) {
-        var temp = this.counter + number;
+        var temp = this.counter - this.batch * this.batch_size + number;
         if (temp > this.img.length - 1)
-            this.counter = 0;
+            this.update_batch(1);
         else if (temp < 0)
-            this.counter = this.img.length - 1;
-        else
-            this.counter += number;
+            this.update_batch(-1);
+        this.counter += number;
         console.log(this.counter);
+        var node = document.getElementById('img_number');
+        node.value = this.counter.toString();
         this.img_load = false;
         this.load_image();
     };
-    AppComponent.prototype.add_field = function () {
-        this.data_fields++;
-        this.arr = Array(this.data_fields).fill(1).map(function (x, i) { return i + 1; });
-        console.log('Adding', this.arr);
+    AppComponent.prototype.goto = function () {
+        this.batch = Number(parseInt((this.counter / this.batch_size).toString()));
+        console.log(this.batch, this.batch_size, this.counter);
+        this.load_batch();
     };
-    AppComponent.prototype.del_field = function () {
-        this.data_fields--;
-        this.arr = Array(this.data_fields).fill(1).map(function (x, i) { return i + 1; });
-        console.log('Deleting', this.arr);
+    AppComponent.prototype.disablePrevious = function () {
+        var val = this.counter - this.batch * this.batch_size;
+        return val == this.min_counter;
+    };
+    AppComponent.prototype.disableNext = function () {
+        return this.counter == this.max_counter - 1;
     };
     AppComponent.prototype.cropped = function (bounds) {
         this.cropperSettings.croppedHeight = bounds.bottom - bounds.top;
@@ -149,6 +171,7 @@ var AppComponent = (function () {
         var image_data = document.getElementById('cropped_img').src, image_name = document.getElementById('img_name').value;
         image_data = image_data.substring(image_data.indexOf(',') + 1);
         console.log('Saving ', image_name, image_data.length);
+        image_name = this.dir + '/' + image_name;
         this.service.saveImage(image_name, image_data).then(function (obj) {
             console.log(obj);
         });
@@ -156,13 +179,17 @@ var AppComponent = (function () {
     AppComponent.prototype.save = function (number) {
         var _this = this;
         console.log('Saving data');
-        var current_image = this.img[this.counter];
+        var current_image = this.img[this.counter - this.batch * this.batch_size];
         current_image.data = {};
         current_image.bounds = this.img_bounds;
-        for (var i = 1; i <= this.data_fields; i++) {
-            var key = document.getElementById('key_' + i).value, val = document.getElementById('value_' + i).value;
-            current_image.data[key] = val;
+        for (var i = 0; i < this.keys.length; i++) {
+            var val = document.getElementById('button_' + this.keys[i]).innerText;
+            if (!val.indexOf('Select'))
+                current_image.data[this.keys[i].toString()] = '';
+            else
+                current_image.data[this.keys[i].toString()] = val;
         }
+        console.log(current_image.data);
         this.service.saveData(current_image).then(function (res) {
             if (number)
                 _this.crop();
@@ -175,7 +202,9 @@ var AppComponent = (function () {
     AppComponent = __decorate([
         core_1.Component({
             selector: 'my-app',
-            template: "<div id=\"all\">\n              <select id=\"dir\" *ngIf=\"dirs\" [(ngModel)]=\"dir\">\n                <option *ngFor=\"let dirname of dirs\" value=\"{{dirname}}\">\n                  {{dirname}}\n                </option>\n              </select>\n              <div *ngIf=\"dir\" id=\"cloth\">\n                <img-cropper [image]=\"data\" [settings]=\"cropperSettings\" (onCrop)=\"cropped($event)\"></img-cropper><br>\n                <button (click)=\"crop()\">Crop</button>\n                <label *ngIf=\"img_load == false\">Image Loading</label>\n                <img *ngIf=\"data.image\" hidden id=\"cropped_img\" [src]=\"data.image\" [width]=\"cropperSettings.croppedWidth\" [height]=\"cropperSettings.croppedHeight\">\n                <div id=\"load\">\n                  <input type=\"number\" min=\"20\" step=\"20\" [(ngModel)]=\"batch_size\"/>\n                  <button (click)=\"load_batch()\">Load</button>\n                  <button (click)=\"update_batch(-1)\">Previous Batch</button>\n                  <button (click)=\"update_batch(1)\">Next Batch</button>\n                </div>\n                <div id=\"access\">\n                  <button (click)=\"load(-1)\">Previous</button>\n                  <button (click)=\"load(1)\">Next</button>\n                  <input type=\"number\" [(ngModel)]=\"counter\" min=\"0\"/>\n                  <button (click)=\"load(0)\">Go</button>\n                </div>\n                <div id=\"data\">\n                  Name:<input type=\"text\" id=\"img_name\" readonly/>\n                  Other:<input type=\"text\" id=\"other\" readonly/>\n                  Data:<label *ngIf=\"data.image\">{{saved}}</label><br/>\n                  Url: <a href=\"{{url}}\">Link</a>\n                  <button (click)=\"add_field()\">Add Field</button>\n                  <table>\n                    <thead *ngIf=\"data_fields != 0\">\n                      <th>Key</th>\n                      <th>Value</th>\n                      <th></th>\n                    </thead>\n                    <tbody id=\"fields\">\n                      <tr *ngFor=\"let i of arr\" id=\"data_{{i}}\">\n                        <td><input id=\"key_{{i}}\" type=\"text\"/></td>\n                        <td><input id=\"value_{{i}}\" type=\"text\"/></td>\n                        <td><button (click)=\"del_field()\">X</button></td>\n                      </tr>\n                    </tbody>\n                  </table>\n                  <button *ngIf=\"data_fields != 0\" (click)=\"save(0)\">Save</button>\n                </div>\n                <button *ngIf=\"data_fields != 0\" (click)=\"save(1)\">Crop & Save</button>\n              </div>\n            </div>"
+            moduleId: module.id,
+            templateUrl: 'app.module.html',
+            styleUrls: ['app.module.css']
         }), 
         __metadata('design:paramtypes', [app_service_1.Service])
     ], AppComponent);
@@ -187,7 +216,7 @@ var AppModule = (function () {
     }
     AppModule = __decorate([
         core_1.NgModule({
-            imports: [platform_browser_1.BrowserModule, http_1.HttpModule, forms_1.FormsModule],
+            imports: [platform_browser_1.BrowserModule, http_1.HttpModule, forms_1.FormsModule, ngx_bootstrap_1.AccordionModule.forRoot(), ngx_bootstrap_1.BsDropdownModule.forRoot(), ngx_bootstrap_1.ButtonsModule.forRoot()],
             declarations: [AppComponent, ng2_img_cropper_1.ImageCropperComponent],
             bootstrap: [AppComponent],
             providers: [app_service_1.Service]

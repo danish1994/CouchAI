@@ -1,0 +1,14 @@
+<div id="scraper">
+  <div id="select">
+    <textarea id="url-list" rows="10" cols="100"></textarea>
+    <button id="data" (click)="scrape(this)" class="btn">Scrape</button>
+    <a routerLink="/home" routerLinkActive="active">
+      <button class="btn">Back</button>
+    </a>
+  </div>
+  <div class="shell-wrap">
+    <p class="shell-top-bar">Console</p>
+    <ul id="list" class="shell-body">
+    </ul>
+  </div>
+</div>

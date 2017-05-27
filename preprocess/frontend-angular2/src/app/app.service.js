@@ -17,24 +17,43 @@ var Service = (function () {
         this.headers = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded'
         });
+        this.ip = '35.154.54.115';
+        this.proto = 'http://';
+        this.port = 8089;
     }
     Service.prototype.getDirs = function () {
-        return this.http.get('http://localhost:8089/img/fs/dir', {
+        return this.http.get(this.proto + this.ip + ':' + this.port + '/img/fs/dir', {
             headers: this.headers
         }).toPromise()
             .then(function (res) { return res.json().data; })
             .catch(this.handleError);
     };
     Service.prototype.getImages = function (dir, min, max) {
-        return this.http.get('http://localhost:8089/img/fs/' + dir + '/' + min + '/' + max, {
+        return this.http.get(this.proto + this.ip + ':' + this.port + '/img/fs/' + dir + '/' + min + '/' + max, {
             headers: this.headers
         }).toPromise()
             .then(function (res) { return res.json().files; })
             .catch(this.handleError);
     };
+    Service.prototype.getCategories = function (category) {
+        var body = 'category=' + category;
+        return this.http.post(this.proto + this.ip + ':' + this.port + '/categories', body, {
+            headers: this.headers
+        }).toPromise()
+            .then(function (res) { return res.json().data; })
+            .catch(this.handleError);
+    };
+    Service.prototype.getCategoryCount = function (category) {
+        var body = 'category=' + category;
+        return this.http.post(this.proto + this.ip + ':' + this.port + '/categories', body, {
+            headers: this.headers
+        }).toPromise()
+            .then(function (res) { return res.json().count; })
+            .catch(this.handleError);
+    };
     Service.prototype.getImageData = function (dirname, filename) {
         var body = 'dirname=' + dirname + '&filename=' + filename;
-        return this.http.post('http://localhost:8089/img/fs', body, {
+        return this.http.post(this.proto + this.ip + ':' + this.port + '/img/fs', body, {
             headers: this.headers
         }).toPromise()
             .then(function (res) { return res.json().data; })
@@ -42,7 +61,7 @@ var Service = (function () {
     };
     Service.prototype.saveImage = function (img_name, img_data) {
         var body = 'name=' + img_name + '&data=' + img_data;
-        return this.http.post('http://localhost:8089/img/save', body, {
+        return this.http.post(this.proto + this.ip + ':' + this.port + '/img/save', body, {
             headers: this.headers
         }).toPromise()
             .then(function (res) { return res.json(); })
@@ -50,14 +69,14 @@ var Service = (function () {
     };
     Service.prototype.saveData = function (cloth) {
         var body = 'name=' + cloth.name + '&data=' + JSON.stringify(cloth.data) + '&bounds=' + JSON.stringify(cloth.bounds);
-        return this.http.post('http://localhost:8089/data', body, {
+        return this.http.post(this.proto + this.ip + ':' + this.port + '/data', body, {
             headers: this.headers
         }).toPromise()
             .then(function (res) { return res.json(); })
             .catch(this.handleError);
     };
     Service.prototype.check = function (name) {
-        return this.http.get('http://localhost:8089/data/' + name, {
+        return this.http.get(this.proto + this.ip + ':' + this.port + '/data/' + name, {
             headers: this.headers
         }).toPromise()
             .then(function (res) { return JSON.stringify(res.json().data); })

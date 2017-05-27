@@ -7,15 +7,15 @@
 *.zip
 /api/train/node_modules
 /api/test/node_modules
-/preprocess/node_modules
+/article-scraper/backend/node_modules
+/article-scraper/frontend/node_modules
+/articles
 /preprocess/backend-node/node_modules
-/preprocess/backend-node/flipkart/dresses
-/preprocess/backend-node/flipkart/kurtas
-/preprocess/backend-node/flipkart/kurtis
-/preprocess/backend-node/flipkart/leggings & jeggings
-/preprocess/backend-node/flipkart/trousers
-/preprocess/backend-node/flipkart/women
+/preprocess/backend-node/couch
 /preprocess/backend-node/final
 /preprocess/frontend-angular2/node_modules
+/preprocess (copy)
 *.js.map
-/scraper/node_modules
+/scraper
+/sheet-json/node_modules
+/sheet-json/json

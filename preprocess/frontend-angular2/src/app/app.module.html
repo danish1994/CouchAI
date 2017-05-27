@@ -1,0 +1,83 @@
+<div id="all" class="container">
+  <!-->
+  <div *ngIf="dirs" id="select-category">
+    <div class="btn-group" dropdown>
+      <button dropdownToggle type="button" class="btn btn-primary dropdown-toggle">
+    Select Category <span class="caret"></span>
+  </button>
+      <ul *dropdownMenu class="dropdown-menu" role="menu" id="category" (click)="updateDir($event)">
+        <li *ngFor="let dirname of dirs" role="menuitem">
+          <a class="dropdown-item">
+            {{dirname}}
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <-->
+    <input type="hidden" id="img_name" readonly class="form-control" /><br/>
+    <div *ngIf="dir" id="cloth" class="text-center">
+      <!-->
+      <div id="image" class="text-center">
+        <img-cropper [image]="data" [settings]="cropperSettings" (onCrop)="cropped($event)"></img-cropper><br>
+        <button type="button" class="btn btn-primary" (click)="crop()" btnCheckbox btnCheckboxTrue="1" btnCheckboxFalse="0">
+        Crop
+      </button><br/>
+        <label *ngIf="img_load == false">Image Loading</label>
+        <img *ngIf="data.image" hidden id="cropped_img" [src]="data.image" [width]="cropperSettings.croppedWidth" [height]="cropperSettings.croppedHeight">
+      </div>
+      <-->
+        <div id="image_base">
+          <img id="product_image" src="">
+        </div>
+        <div id="access">
+          <button type="button" id="previous" class="btn btn-primary" [disabled]="disablePrevious()" (click)="load(-1)" btnCheckbox
+            btnCheckboxTrue="1" btnCheckboxFalse="0">
+        Previous
+      </button>
+          <button type="button" id="next" class="btn btn-primary" [disabled]="disableNext()" (click)="load(1)" btnCheckbox btnCheckboxTrue="1"
+            btnCheckboxFalse="0">
+        Next
+      </button><br/>
+          <input type="number" [(ngModel)]="counter" min="0" class="form-control" id="img_number"/>
+          <button type="button" class="btn btn-primary" (click)="goto()" btnCheckbox btnCheckboxTrue="1" btnCheckboxFalse="0">
+        Go
+      </button>
+      <button type="button" class="btn btn-primary" (click)="clear()" btnCheckbox btnCheckboxTrue="1" btnCheckboxFalse="0">
+        Clear All Fields
+      </button>
+        </div>
+        <div id="data">
+          <table class="table-responsive table-condensed">
+            <tbody id="fields">
+              <tr *ngFor="let i of keys" id="data_{{i}}">
+                <td><label id="key_{{i}}">{{i}}</label></td>
+                <td>
+                  <div class="btn-group" dropdown>
+                    <button dropdownToggle type="button" class="btn btn-primary dropdown-toggle" id="button_{{i}}">
+                  Select {{i}} <span class="caret"></span>
+                </button>
+                    <ul *dropdownMenu class="dropdown-menu" role="menu" id="value_{{i}}" (click)="updateVal($event)">
+                      <li *ngFor="let value of values[keys.indexOf(i)]" role="menuitem">
+                        <a class="dropdown-item" id="{{i}}_{{value}}">
+                      {{value}}
+                    </a>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <br/><br/>
+          <button (click)="save(0)" type="button" class="btn btn-primary" btnCheckbox btnCheckboxTrue="1" btnCheckboxFalse="0">
+        Save
+      </button>
+        </div>
+        <!--><br/>
+        <button (click)="save(1)" type="button" class="btn btn-primary" btnCheckbox btnCheckboxTrue="1" btnCheckboxFalse="0">
+      Crop & Save
+    </button>
+        <-->
+    </div>
+</div>
