@@ -1,1 +1,1 @@
-ssh -i couch-mumbai.pem ubuntu@ec2-35-154-54-115.ap-south-1.compute.amazonaws.com
+ssh -i couch-mumbai.pem ubuntu@ec2-13-126-35-86.ap-south-1.compute.amazonaws.com

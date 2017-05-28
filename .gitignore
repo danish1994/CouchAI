@@ -10,10 +10,8 @@
 /article-scraper/backend/node_modules
 /article-scraper/frontend/node_modules
 /articles
-/preprocess/backend-node/node_modules
 /preprocess/backend-node/couch
 /preprocess/backend-node/final
-/preprocess/frontend-angular2/node_modules
 /preprocess (copy)
 /preprocess-ai/node_modules
 *.js.map
