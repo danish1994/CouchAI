@@ -17,6 +17,7 @@ for (i = 0; i < data.length; i++) {
         })
         for (k = 0; k < ky.length; k++)
             json[data[i]['sheetName']][fky[k]].push(data[i].data[j][ky[k]])
+        json[data[i]['sheetName']]['Color'] = ['Red', 'Orange', 'Yellow', 'Blue', 'Purple', 'Pink', 'Indigo', 'Green', 'Brown', 'Black', 'Grey', 'White']
     }
 }
 

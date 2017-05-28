@@ -1,1 +1,13 @@
-{"Western Dresses":{"Length":["Mini","Knee Length","Midi Length","Maxi"],"Sleeves":["Sleeveless","3/4","1/2","1/4","Full","Spaghetti Strap"],"NeckLine":["Scoop","V-Neck","Off Shoulder","Halter","High Neck","Strapless","Asymmetric","Jewel/Round Neck","Boat Neck"],"Pattern":["Plaid","Floral","Windowpane","Gingham"]},"Western Tops":{"NeckLine":["Collar","Round","V-Neck","Peter Pan","Turtle neck"]}}
+{
+    "Western Dresses": {
+        "Length": ["Mini", "Knee Length", "Midi Length", "Maxi"],
+        "Sleeves": ["Sleeveless", "3/4", "1/2", "1/4", "Full", "Spaghetti Strap"],
+        "NeckLine": ["Scoop", "V-Neck", "Off Shoulder", "Halter", "High Neck", "Strapless", "Asymmetric", "Jewel/Round Neck", "Boat Neck"],
+        "Pattern": ["Plaid", "Floral", "Windowpane", "Gingham"],
+        "Color": ["Red", "Orange", "Yellow", "Blue", "Purple", "Pink", "Indigo", "Green", "Brown", "Black", "Grey", "White"]
+    },
+    "Western Tops": {
+        "NeckLine": ["Collar", "Round", "V-Neck", "Peter Pan", "Turtle neck"],
+        "Color": ["Red", "Orange", "Yellow", "Blue", "Purple", "Pink", "Indigo", "Green", "Brown", "Black", "Grey", "White"]
+    }
+}
