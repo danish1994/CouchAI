@@ -8,3 +8,6 @@ rm -rf couch
 mkdir couch
 cd ../../preprocess-ai
 node copy.js
+
+echo "Categories added to backend"
+echo "Dataset preprocess app updated"
