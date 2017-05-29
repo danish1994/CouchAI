@@ -10,7 +10,7 @@ export class Service {
     headers: Headers = new Headers({
         'Content-Type': 'application/x-www-form-urlencoded'
     })
-    ip = '13.126.35.86'
+    ip = '52.66.124.222'
     proto = 'http://'
     port = 8089
     constructor(private http: Http) { }
